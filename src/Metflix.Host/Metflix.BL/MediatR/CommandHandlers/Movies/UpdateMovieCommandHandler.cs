@@ -8,7 +8,7 @@ using AutoMapper;
 using MediatR;
 using Metflix.DL.Repositories.Contracts;
 using Metflix.Models.DbModels;
-using Metflix.Models.Mediatr.Commands;
+using Metflix.Models.Mediatr.Commands.Movies;
 using Metflix.Models.Responses.Movies;
 using Metflix.Models.Responses.Movies.MovieDtos;
 using Utils;

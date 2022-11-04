@@ -57,20 +57,14 @@ namespace Metflix.BL.Services.Implementations
                 };
             }
             var newUser = _mapper.Map<UserInfo>(userRequest);
-            var isCreated = await _userRepo.CreateUser(newUser);
-            if (!isCreated)
-            {
-                return new RegisterUserResponse();
-            }
+            await _userRepo.CreateUser(newUser);            
 
             return new RegisterUserResponse()
             {
-                HttpStatusCode = HttpStatusCode.Created
+                HttpStatusCode = HttpStatusCode.Created,
+                Message = ResponseMessages.SuccesfullyRegistered,
             };
-        }
-
-       
-
-       
+        }    
+              
     }
 }

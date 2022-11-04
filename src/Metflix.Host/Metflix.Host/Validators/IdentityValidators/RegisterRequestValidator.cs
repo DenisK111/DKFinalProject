@@ -27,8 +27,7 @@ namespace Metflix.Host.Validators.IdentityValidators
 
             RuleFor(x => x.Name)
                 .NotEmpty()
-                .MaximumLength(200);
-          
+                .MaximumLength(200);          
 
         }
     }

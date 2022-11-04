@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 using MediatR;
 using Metflix.Models.Responses.Movies;
 
-namespace Metflix.Models.Mediatr.Commands
+namespace Metflix.Models.Mediatr.Queries.Movies
 {
-    public record DeleteMovieCommand(int Id) : IRequest<MovieResponse>
+    public record GetMovieByIdQuery(int id) : IRequest<MovieResponse>
     {
     }
 }

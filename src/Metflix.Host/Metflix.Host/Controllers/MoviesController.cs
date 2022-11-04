@@ -4,7 +4,9 @@ using Metflix.DL.Repositories.Contracts;
 using Metflix.Host.Extensions;
 using Metflix.Models.DbModels;
 using Metflix.Models.Mediatr.Commands;
+using Metflix.Models.Mediatr.Commands.Movies;
 using Metflix.Models.Mediatr.Queries;
+using Metflix.Models.Mediatr.Queries.Movies;
 using Metflix.Models.Requests.Movies;
 using Microsoft.AspNetCore.Mvc;
 

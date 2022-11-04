@@ -13,8 +13,7 @@ namespace Metflix.Models.DbModels
         public DateTime DateOfBirth { get; init; }
         public string Email { get; init; } = null!;
         public string Password { get; set; } = null!;
-        public DateTime CreatedDate { get; init; }
-        
+        public DateTime CreatedDate { get; init; }       
 
         public string Role { get; init; } = null!;
 

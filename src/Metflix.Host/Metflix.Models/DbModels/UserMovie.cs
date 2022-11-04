@@ -6,12 +6,14 @@ using System.Threading.Tasks;
 
 namespace Metflix.Models.DbModels
 {
-    public class UserMovie
+    public class UserMovie 
     {
-        public string UserId { get; init; } = null!;
+        public int Id { get; set; }
+        public Guid UserId { get; init; }
         public int MovieId { get; init; }
         public DateTime LastChanged { get; init; }
-        public DateTime DueDate { get; init; }
+        public int DaysFor { get;init; }
+        public DateTime DueDate { get; set; }
         public DateTime CreatedOn { get; init; }
 
         public bool IsReturned { get; set; }

@@ -4,11 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using MediatR;
+using Metflix.Models.Requests.Movies;
 using Metflix.Models.Responses.Movies;
 
-namespace Metflix.Models.Mediatr.Queries
+namespace Metflix.Models.Mediatr.Commands.Movies
 {
-    public record GetMovieByIdQuery(int id) : IRequest<MovieResponse>
+    public record UpdateMovieCommand(UpdateMovieRequest Request) : IRequest<MovieResponse>
     {
     }
 }

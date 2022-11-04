@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Reflection;
@@ -10,19 +11,20 @@ using Dapper;
 using Metflix.DL.Repositories.Contracts;
 using Metflix.Models.DbModels;
 using Metflix.Models.DbModels.Configurations;
+using Metflix.Models.Responses.Movies.MovieDtos;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace Metflix.DL.Repositories.Implementations
+namespace Metflix.DL.Repositories.Implementations.SqlRepositories
 {
-    public class MovieRepository : IMovieRepository
+    public class SqlMovieRepository : IMovieRepository
     {
 
-        private readonly ILogger<MovieRepository> _logger;
+        private readonly ILogger<SqlMovieRepository> _logger;
         private readonly IOptionsMonitor<ConnectionStrings> _configuration;
 
-        public MovieRepository(ILogger<MovieRepository> logger, IOptionsMonitor<ConnectionStrings> configuration)
+        public SqlMovieRepository(ILogger<SqlMovieRepository> logger, IOptionsMonitor<ConnectionStrings> configuration)
         {
             _logger = logger;
             _configuration = configuration;
@@ -45,9 +47,8 @@ namespace Metflix.DL.Repositories.Implementations
             catch (Exception e)
             {
                 _logger.LogError($"Error in {nameof(Add)}:{e.Message}", e);
+                throw;
             }
-
-            return null!;
         }
 
         public async Task<bool> Delete(int modelId, CancellationToken cancellationToken = default)
@@ -68,9 +69,8 @@ namespace Metflix.DL.Repositories.Implementations
             catch (Exception e)
             {
                 _logger.LogError($"Error in {nameof(Delete)}:{e.Message}", e);
+                throw;
             }
-
-            return false;
         }
 
         public async Task<IEnumerable<Movie>> GetAll(CancellationToken cancellationToken = default)
@@ -83,19 +83,43 @@ namespace Metflix.DL.Repositories.Implementations
                 {
                     await conn.OpenAsync(cancellationToken);
                     return await conn.QueryAsync<Movie>(query);
-                    
+
+                }
+            }
+
+            catch (Exception e)
+            {
+                _logger.LogError($"Error in {nameof(GetAll)}:{e.Message}");
+                throw;
+            }
+        }
+
+        public async Task<IEnumerable<Movie>> GetAllAvailableMovies(CancellationToken cancellationToken = default)
+        {
+            var query = @"SELECT Id, Name, Year, PricePerDay
+                            From Movies WITH (NOLOCK)
+                            WHERE AvailableQuantity > 0";
+
+
+            try
+            {
+                await using (var conn = new SqlConnection(_configuration.CurrentValue.SqlConnection))
+                {
+                    await conn.OpenAsync(cancellationToken);
+                    return await conn.QueryAsync<Movie>(query);
+
                 }
             }
             catch (Exception e)
             {
-                _logger.LogError($"Error in {nameof(GetAll)}:{e.Message}", e);
+                _logger.LogError($"Error in {nameof(GetAllAvailableMovies)}:{e.Message}", e);
+                throw;
             }
-           
-            return Enumerable.Empty<Movie>();
         }
+    
 
         public async Task<Movie?> GetById(int id, CancellationToken cancellationToken = default)
-        {          
+        {
 
             var query = @"SELECT * FROM Movies WITH (NOLOCK) WHERE Id = @Id";
 
@@ -104,16 +128,15 @@ namespace Metflix.DL.Repositories.Implementations
                 await using (var conn = new SqlConnection(_configuration.CurrentValue.SqlConnection))
                 {
                     await conn.OpenAsync(cancellationToken);
-                    return await conn.QueryFirstOrDefaultAsync<Movie>(query,new {Id=id});
+                    return await conn.QueryFirstOrDefaultAsync<Movie>(query, new { Id = id });
 
                 }
             }
             catch (Exception e)
             {
                 _logger.LogError($"Error in {nameof(GetById)}:{e.Message}", e);
+                throw;
             }
-
-            return null;
         }
 
         public async Task<Movie?> Update(Movie model, CancellationToken cancellationToken = default)
@@ -136,9 +159,8 @@ namespace Metflix.DL.Repositories.Implementations
             catch (Exception e)
             {
                 _logger.LogError($"Error in {nameof(Update)}:{e.Message}", e);
+                throw;
             }
-
-            return null;
         }
     }
 }

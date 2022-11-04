@@ -13,6 +13,8 @@ using FluentValidation.AspNetCore;
 using Metflix.Host.Validators.IdentityValidators;
 using Metflix.Models.Responses;
 using Utils;
+using System.Net;
+using Metflix.Host.Extensions;
 
 namespace Metflix.Host.Controllers
 {
@@ -31,15 +33,23 @@ namespace Metflix.Host.Controllers
 
         [AllowAnonymous]
         [HttpPost(nameof(Register))]
-
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
         public async Task<IActionResult> Register([FromBody] RegisterRequest user,CancellationToken cancellationToken)
         {          
             var result = await _identityService.CreateAsync(user,cancellationToken);
-            return result != null ? Ok(result) : BadRequest();
+            if (result.HttpStatusCode == HttpStatusCode.Created)
+            {
+                return CreatedAtAction((nameof(Login)), new { Message = result.Message });
+            }
+
+            return this.ProduceResponse(result);
         }
 
         [AllowAnonymous]
         [HttpPost(nameof(Login))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Login([CustomizeValidator(Skip = true)] LoginRequest loginRequest, CancellationToken cancellationToken)
         {
             LoginRequestValidator loginValidator = new();

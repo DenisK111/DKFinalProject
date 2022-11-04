@@ -1,5 +1,7 @@
 ﻿using Newtonsoft.Json;
+using System.Data.SqlClient;
 using System.Net;
+using Utils;
 
 namespace Metflix.Host.Middleware.ErrorHandlerMiddleware
 {
@@ -34,13 +36,18 @@ namespace Metflix.Host.Middleware.ErrorHandlerMiddleware
 
                 var result = new
                 {
-                    message = error.Message
+                    message = error switch
+                    {
+                        SqlException=> ResponseMessages.SqlExceptionMessage,
+                        AppException e => e.Message,
+                        KeyNotFoundException e => e.Message,
+                        _ => ResponseMessages.InternalServerErrorMessage
+                    }
                 };
+
                 _logger.LogError(error.StackTrace);
                 await response.WriteAsJsonAsync(result);
-
             }
-
         }
     }
 }

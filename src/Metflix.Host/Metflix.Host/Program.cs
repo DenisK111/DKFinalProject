@@ -41,6 +41,8 @@ namespace Metflix.Host
                 builder.Configuration.GetSection(nameof(ConnectionStrings)));
             builder.Services.Configure<Jwt>(
                 builder.Configuration.GetSection(nameof(Jwt)));
+            builder.Services.Configure<MongoDbSettings>(
+                builder.Configuration.GetSection(nameof(MongoDbSettings)));
 
             //ADD JWT Authentication
 

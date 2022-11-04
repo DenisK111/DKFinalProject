@@ -13,6 +13,7 @@ namespace Metflix.Host.AutoMapper
             CreateMap<AddMovieRequest, Movie>();
             CreateMap<UpdateMovieRequest, Movie>();
             CreateMap<Movie, MovieDto>();
+            CreateMap<Movie, AvailableMovieDto>();
         }
     }
 }
