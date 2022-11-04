@@ -1,0 +1,86 @@
+[
+    {
+        "Name": "The Matrix",
+        "TotalQuantity": 30,       
+        "PricePerDay": 2,
+        "Year": 2000
+    },
+    {
+        "Name": "The Matrix Reloaded",
+        "TotalQuantity": 21,        
+        "PricePerDay": 2,
+        "Year": 2002
+    },
+    {
+        "Name": "The Matrix Revolutions",
+        "TotalQuantity": 21,        
+        "PricePerDay": 2,
+        "Year": 2003
+    },
+    {
+        "Name": "Gone With The Wind",
+        "TotalQuantity": 5,        
+        "PricePerDay": 4,
+        "Year": 1939
+    },
+    {
+        "Name": "Heat",
+        "TotalQuantity": 10,        
+        "PricePerDay": 4,
+        "Year": 1995
+    },
+    {
+        "Name": "Transformers",
+        "TotalQuantity": 20,        
+        "PricePerDay": 1,
+        "Year": 2005
+    },
+    {
+        "Name": "The Expandables",
+        "TotalQuantity": 6,        
+        "PricePerDay": 1,
+        "Year": 2015
+    },
+    {
+        "Name": "Avatar",
+        "TotalQuantity": 3,        
+        "PricePerDay": 5,
+        "Year": 2009
+    },
+    {
+        "Name": "Akira",
+        "TotalQuantity": 4,        
+        "PricePerDay": 3,
+        "Year": 1989
+    },
+    {
+        "Name": "Sonic",
+        "TotalQuantity": 1,        
+        "PricePerDay":13,
+        "Year": 2020
+    },
+    {
+        "Name": "Pokemon",
+        "TotalQuantity": 14,        
+        "PricePerDay": 1,
+        "Year": 2003
+    },
+    {
+        "Name": "Citizen Kane",
+        "TotalQuantity": 10,        
+        "PricePerDay": 1,
+        "Year": 1933
+    },
+    {
+        "Name": "The Shawshank Redemption",
+        "TotalQuantity": 15,        
+        "PricePerDay": 2,
+        "Year": 1994
+    },
+    {
+        "Name": "Taxi",
+        "TotalQuantity": 24,        
+        "PricePerDay": 3,
+        "Year": 1984
+    }
+]
