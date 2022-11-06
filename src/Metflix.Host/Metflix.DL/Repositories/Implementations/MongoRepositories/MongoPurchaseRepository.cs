@@ -5,6 +5,7 @@ using Metflix.Models.DbModels;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
+using MongoDB.Driver.Linq;
 
 namespace Metflix.DL.Repositories.Implementations.MongoRepositories
 {
@@ -54,7 +55,7 @@ namespace Metflix.DL.Repositories.Implementations.MongoRepositories
             
         }
 
-        public async Task<IEnumerable<Purchase>> GetAllForUser(Guid userId,CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<Purchase>> GetAllByUserId(string userId,CancellationToken cancellationToken = default)
         {
             try
             {
@@ -62,22 +63,50 @@ namespace Metflix.DL.Repositories.Implementations.MongoRepositories
             }
             catch
             {
-                _logger.LogError($"Error in {nameof(GetAllForUser)}");
+                _logger.LogError($"Error in {nameof(GetAllByUserId)}");
                 throw;
             }            
+        }
+
+        public async Task<Purchase?> GetById(Guid id, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                return (await(await _purchaseCollection.FindAsync(x=>x.Id == id)).FirstOrDefaultAsync());
+            }
+            catch
+            {
+                _logger.LogError($"Error in {nameof(GetById)}");
+                throw;
+            }
+        }
+
+        public async Task<Purchase?> GetByIdAndUserId(Guid id, string userId, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                return (await (await _purchaseCollection.FindAsync(x => x.Id == id && x.UserId == userId)).FirstOrDefaultAsync());
+            }
+            catch
+            {
+                _logger.LogError($"Error in {nameof(GetById)}");
+                throw;
+            }
         }
 
         public async Task<decimal> GetTotalSales(int minutes, CancellationToken cancellationToken = default)
         {
             try
             {
-                 return (await (await _purchaseCollection
-                .FindAsync(x => x.PurchaseDate >= DateTime.UtcNow.AddMinutes(minutes * -1)))
-                .ToListAsync()).Sum(x=>x.TotalPrice);
+                return (await _purchaseCollection
+               .AsQueryable()
+               .Where(x => x.PurchaseDate >= DateTime.UtcNow.AddMinutes(minutes * -1))
+               .Select(x => x.TotalPrice)
+               .SumAsync());                          
             }
             catch
             {
-                _logger.LogError($"Error in {nameof(GetAllForUser)}");
+                _logger.LogError($"Error in {nameof(GetTotalSales)}");
                 throw;
             }            
         }

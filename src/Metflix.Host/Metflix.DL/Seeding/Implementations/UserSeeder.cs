@@ -26,12 +26,20 @@ namespace Metflix.DL.Seeding.Implementations
         {
             var users = new List<UserInfo>() {
              new UserInfo()
-            {
+            {                
                 Name = "Admin",
                 Email = "admin@admin.com",
                 Password = CustomPasswordHasher.GetSHA512Password("admin"),
                 DateOfBirth = new DateTime(1992, 1, 1),
                 Role = UserRoles.Admin
+            },
+              new UserInfo()
+            {
+                Name = "User",
+                Email = "user@user.com",
+                Password = CustomPasswordHasher.GetSHA512Password("user"),
+                DateOfBirth = new DateTime(1992, 1, 1),
+                Role = UserRoles.User
             }
             };
 

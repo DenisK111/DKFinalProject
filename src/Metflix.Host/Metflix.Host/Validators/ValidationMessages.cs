@@ -5,5 +5,6 @@
         public static string AvailableQtyValidation { get; set; } = "Available quantity cannot be more than total quantity.";
         public static string InvalidMovieName { get; set; } = "Movie must be between 1 and 200 characters in length";
         public static string InvalidEmail { get; set; } = "Invalid Email.";
+        public static string MovieIdPositiveNumber { get; set; } = "Movie Id's must be a positive integer";
     }
 }

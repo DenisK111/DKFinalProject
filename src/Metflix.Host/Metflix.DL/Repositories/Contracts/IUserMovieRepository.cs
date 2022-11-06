@@ -10,7 +10,7 @@ namespace Metflix.DL.Repositories.Contracts
 {
     public interface IUserMovieRepository
     {
-        Task<UserMovie?> Add(UserMovie model, CancellationToken cancellationToken = default);
+        Task Add(UserMovie model, CancellationToken cancellationToken = default);
         Task<bool> MarkAsReturned(int id, CancellationToken cancellationToken = default);
         Task<IEnumerable<UserMovie>> GetAll(CancellationToken cancellationToken = default);
         Task<UserMovie?> GetById(int Id,CancellationToken cancellationToken = default);

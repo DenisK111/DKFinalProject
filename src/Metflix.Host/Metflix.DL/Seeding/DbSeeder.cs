@@ -26,7 +26,7 @@ namespace Metflix.DL.Seeding
         {
             var seeders = new List<ISeeder>()
             {
-               // new MoviesSeeder(_movieRepository),
+                new MoviesSeeder(_movieRepository),
                 new UserSeeder(_identityRepository)
             };
 

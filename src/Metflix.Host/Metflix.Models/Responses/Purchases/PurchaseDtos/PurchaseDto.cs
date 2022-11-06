@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Metflix.Models.DbModels;
 
-namespace Metflix.Models.DbModels
+namespace Metflix.Models.Responses.Purchases.PurchaseDtos
 {
-    public class Purchase : BaseModel<Guid>
+    public record PurchaseDto
     {
+        public string Id { get; set; } = null!;
         public IEnumerable<MovieRecord> Movies { get; set; } = null!;
 
         public int Days { get; set; }
@@ -17,6 +19,6 @@ namespace Metflix.Models.DbModels
         public DateTime PurchaseDate { get; set; }
         public DateTime DueDate { get; set; }
 
-        public string UserId { get; set; } = null!;
+        public Guid UserId { get; set; }
     }
 }

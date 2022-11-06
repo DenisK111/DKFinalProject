@@ -27,7 +27,7 @@ namespace Metflix.DL.Repositories.Implementations.SqlRepositories
             _logger = logger;
             _configuration = configuration;
         }
-        public async Task<UserMovie?> Add(UserMovie model, CancellationToken cancellationToken = default)
+        public async Task Add(UserMovie model, CancellationToken cancellationToken = default)
         {
             var query = @"INSERT INTO UserMovies
                             VALUES(@UserId,@MovieId,GetDate(),@DueDate,@IsReturned,GetDate(),@DaysFor)";
@@ -39,13 +39,12 @@ namespace Metflix.DL.Repositories.Implementations.SqlRepositories
                     await conn.OpenAsync(cancellationToken);
                     var result = await conn.QuerySingleOrDefaultAsync<UserMovie>(query, new
                     {
-                        model.UserId,
-                        model.MovieId,
+                        UserId = model.UserId,
+                        MovieId = model.MovieId,
                         DueDate = DateTime.UtcNow.AddDays(model.DaysFor),
-                        model.IsReturned,
-                        model.DaysFor
-                    });
-                    return model;
+                        IsReturned = model.IsReturned,
+                        DaysFor = model.DaysFor
+                    });                    
                 }
             }
             catch (Exception e)

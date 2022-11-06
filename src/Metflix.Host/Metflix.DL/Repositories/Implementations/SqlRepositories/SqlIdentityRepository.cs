@@ -54,7 +54,7 @@ namespace Metflix.DL.Repositories.Implementations.SqlRepositories
         public async Task<bool> CreateUser(UserInfo user, CancellationToken cancellationToken = default)
         {
             var query = @"INSERT INTO Users
-                        Values(NEWID(), @Name , @DateOfBirth, @Email, @Password,  GetDate(), GetDate(), @Role)";
+                        Values(@Id, @Name , @DateOfBirth, @Email, @Password,  GetDate(), GetDate(), @Role)";
 
             try
             {

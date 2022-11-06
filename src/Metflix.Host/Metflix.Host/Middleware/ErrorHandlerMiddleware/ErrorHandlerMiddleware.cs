@@ -46,7 +46,7 @@ namespace Metflix.Host.Middleware.ErrorHandlerMiddleware
                 };
 
                 _logger.LogError(error.StackTrace);
-                await response.WriteAsJsonAsync(result);
+                await response.WriteAsJsonAsync(error.Message);
             }
         }
     }

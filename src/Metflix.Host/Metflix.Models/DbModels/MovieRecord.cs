@@ -2,9 +2,9 @@
 {
     public class MovieRecord
     {
-        public int MovieId { get; set; }
+        public int Id { get; set; }
 
-        public string MovieName { get; set; } = null!;
+        public string Name { get; set; } = null!;
 
         public decimal PricePerDay { get; set; }
     }

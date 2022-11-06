@@ -15,6 +15,7 @@ using Metflix.Models.Responses;
 using Utils;
 using System.Net;
 using Metflix.Host.Extensions;
+using Metflix.Host.Common;
 
 namespace Metflix.Host.Controllers
 {
@@ -73,10 +74,10 @@ namespace Metflix.Host.Controllers
                         new Claim(JwtRegisteredClaimNames.Sub,_configuration.CurrentValue.Subject),
                         new Claim(JwtRegisteredClaimNames.Jti,Guid.NewGuid().ToString()),
                         new Claim(JwtRegisteredClaimNames.Iat,DateTime.Now.ToString()),
-                        new Claim("Id", user.Id.ToString()),
-                        new Claim("Name", user.Name ?? string.Empty),                        
-                        new Claim("Email", user.Email ?? string.Empty),
-                        new Claim("Role",user.Role),
+                        new Claim(JwtClaims.Id, user.Id.ToString()),
+                        new Claim(JwtClaims.Name, user.Name ?? string.Empty),                        
+                        new Claim(JwtClaims.Email, user.Email ?? string.Empty),
+                        new Claim(JwtClaims.Role,user.Role),
                     };
 
                 var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration.CurrentValue.Key));
@@ -85,7 +86,7 @@ namespace Metflix.Host.Controllers
                     _configuration.CurrentValue.Issuer,
                     _configuration.CurrentValue.Audience,
                     claims,
-                    expires: DateTime.UtcNow.AddMinutes(30),
+                    expires: DateTime.UtcNow.AddMinutes(_configuration.CurrentValue.DurationInMinutes),
                     signingCredentials: signIn);
 
                 return Ok(new JwtSecurityTokenHandler().WriteToken(token));

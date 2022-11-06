@@ -1,7 +1,14 @@
-﻿using MediatR;
+﻿using System.Net;
+using MediatR;
+using Metflix.Host.Common;
 using Metflix.Host.Extensions;
+using Metflix.Models.Mediatr.Commands.Purchases;
 using Metflix.Models.Mediatr.Queries.Movies;
+using Metflix.Models.Mediatr.Queries.Purchases;
+using Metflix.Models.Requests.Purchase;
+using Metflix.Models.Responses.Purchases;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Metflix.Host.Controllers
 {
@@ -20,8 +27,46 @@ namespace Metflix.Host.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> GetAvailableMovies(CancellationToken cancellationToken)
         {
-            var result = await _mediator.Send(new GetAvailableMoviesQuery());
+            var result = await _mediator.Send(new GetAvailableMoviesQuery(),cancellationToken);
+            return this.ProduceResponse(result);
+        }
+
+        [HttpGet(nameof(GetMyPurchases))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetMyPurchases(CancellationToken cancellationToken)
+        {
+            var userId = this.GetUserId();
+            var result = await _mediator.Send(new GetMyPurchasesQuery(userId),cancellationToken);
+            return this.ProduceResponse(result);
+        }
+
+        [HttpPost(nameof(MakePurchase))]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> MakePurchase([FromBody] PurchaseRequest request, CancellationToken cancellationToken)
+        {
+            
+            var userId = this.GetUserId();
+            var result = await _mediator.Send(new MakePurchaseCommand(request, userId),cancellationToken);
+
+            if (result.HttpStatusCode==HttpStatusCode.Created)
+            {
+                return CreatedAtAction(nameof(GetPurchaseById), new { Id = result.Model!.Id }, result.Model);
+            }
+
+            return this.ProduceResponse(result);
+        }
+
+        [HttpGet(nameof(GetPurchaseById))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetPurchaseById(Guid id, CancellationToken cancellationToken)
+        {
+            var userId = this.GetUserId();
+            var result = await _mediator.Send(new GetPurchaseByIdAndUserIdQuery(id,userId), cancellationToken);
             return this.ProduceResponse(result);
         }
     }
+
+   
 }
