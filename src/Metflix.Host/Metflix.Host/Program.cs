@@ -33,7 +33,8 @@ namespace Metflix.Host
             builder.Logging.AddSerilog(logger);
             builder.Services
                 .AddHealthChecks()
-                .AddCheck<SqlHealthCheck>("SQL Server");
+                .AddCheck<SqlHealthCheck>(HealthCheckComponents.SqlServer)
+                .AddCheck<MongoDbHealthCheck>(HealthCheckComponents.MongoDb);
 
             // Register Configurations
 

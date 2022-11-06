@@ -15,11 +15,13 @@ namespace Metflix.DL.Seeding
     {
         private readonly IMovieRepository _movieRepository;
         private readonly IIdentityRepository _identityRepository;
+        private readonly IPurchaseRepository _purchaseRepository;
 
-        public DbSeeder(IMovieRepository movieRepository, IIdentityRepository identityRepository)
+        public DbSeeder(IMovieRepository movieRepository, IIdentityRepository identityRepository, IPurchaseRepository purchaseRepository)
         {
             _movieRepository = movieRepository;
             _identityRepository = identityRepository;
+            _purchaseRepository = purchaseRepository;
         }
 
         public async Task SeedDb()
@@ -27,7 +29,8 @@ namespace Metflix.DL.Seeding
             var seeders = new List<ISeeder>()
             {
                 new MoviesSeeder(_movieRepository),
-                new UserSeeder(_identityRepository)
+                new UserSeeder(_identityRepository),
+                new PurchaseSeeder(_purchaseRepository,_identityRepository)
             };
 
             foreach (var seeder in seeders)
