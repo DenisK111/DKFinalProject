@@ -18,5 +18,7 @@ namespace Metflix.Models.DbModels
         public DateTime DueDate { get; set; }
 
         public string UserId { get; set; } = null!;
+
+        public IEnumerable<int> UserMovieIds = null!;
     }
 }

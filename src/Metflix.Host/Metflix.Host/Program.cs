@@ -9,6 +9,8 @@ using Metflix.Host.Extensions;
 using Metflix.Host.HealthChecks;
 using Metflix.Host.Middleware.ErrorHandlerMiddleware;
 using Metflix.Models.Configurations;
+using Metflix.Models.Configurations.KafkaSettings.Consumers;
+using Metflix.Models.Configurations.KafkaSettings.Producers;
 using Metflix.Models.DbModels.Configurations;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
@@ -44,6 +46,14 @@ namespace Metflix.Host
                 builder.Configuration.GetSection(nameof(Jwt)));
             builder.Services.Configure<MongoDbSettings>(
                 builder.Configuration.GetSection(nameof(MongoDbSettings)));
+            builder.Services.Configure<KafkaUserPurchaseInputConsumerSettings>(
+                builder.Configuration.GetSection(nameof(KafkaUserPurchaseInputConsumerSettings)));
+            builder.Services.Configure<KafkaUserPurchaseInputProducerSettings>(
+                builder.Configuration.GetSection(nameof(KafkaUserPurchaseInputProducerSettings)));
+            builder.Services.Configure<KafkaPurchaseDataConsumerSettings>(
+                builder.Configuration.GetSection(nameof(KafkaPurchaseDataConsumerSettings)));
+            builder.Services.Configure<KafkaPurchaseDataProducerSettings>(
+                builder.Configuration.GetSection(nameof(KafkaPurchaseDataProducerSettings)));
 
             //ADD JWT Authentication
 
@@ -105,6 +115,9 @@ namespace Metflix.Host
 
             builder.Services.RegisterRepositories();
             builder.Services.RegisterServices();
+            builder.Services.RegisterKafkaProducers();
+            builder.Services.RegisterHostedServices();
+            builder.Services.RegisterDataFlow();
 
             var app = builder.Build();
 

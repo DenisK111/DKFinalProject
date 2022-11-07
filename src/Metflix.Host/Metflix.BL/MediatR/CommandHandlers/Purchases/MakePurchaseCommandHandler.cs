@@ -6,8 +6,12 @@ using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
 using MediatR;
+using Metflix.BL.TempData;
 using Metflix.DL.Repositories.Contracts;
+using Metflix.Kafka.Producers;
+using Metflix.Models.Configurations.KafkaSettings.Producers;
 using Metflix.Models.DbModels;
+using Metflix.Models.KafkaModels;
 using Metflix.Models.Mediatr.Commands.Purchases;
 using Metflix.Models.Responses.Purchases;
 using Metflix.Models.Responses.Purchases.PurchaseDtos;
@@ -17,34 +21,37 @@ namespace Metflix.BL.MediatR.CommandHandlers.Purchases
 {
     public class MakePurchaseCommandHandler : IRequestHandler<MakePurchaseCommand, PurchaseResponse>
     {
-        private readonly IMapper _mapper;
-        private readonly IUserMovieRepository _userMovieRepository;
-        private readonly IPurchaseRepository _purchaseRepository;
+        private readonly IMapper _mapper;       
         private readonly IMovieRepository _movieRepository;
+        private readonly GenericProducer<string, PurchaseUserInputData, KafkaUserPurchaseInputProducerSettings> _producer;
 
-        public MakePurchaseCommandHandler(IMapper mapper, IUserMovieRepository userMovieRepository, IPurchaseRepository purchaseRepository, IMovieRepository movieRepository)
+        public MakePurchaseCommandHandler(IMapper mapper, IMovieRepository movieRepository, GenericProducer<string, PurchaseUserInputData, KafkaUserPurchaseInputProducerSettings> producer)
         {
             _mapper = mapper;
-            _userMovieRepository = userMovieRepository;
-            _purchaseRepository = purchaseRepository;
+         
             _movieRepository = movieRepository;
+            _producer = producer;
         }
 
         public async Task<PurchaseResponse> Handle(MakePurchaseCommand request, CancellationToken cancellationToken)
         {
-            var movies = new List<MovieRecord>();
             var invalidMovieIds = new List<int>();
+            var notEnoughQuantity = new List<int>();
 
             foreach (var id in request.Request.MovieIds)
             {
-                var movie = await _movieRepository.GetById(id,cancellationToken);
+                var movie = await _movieRepository.GetById(id, cancellationToken);
                 if (movie == null)
                 {
                     invalidMovieIds.Add(id);
                     continue;
                 }
-                var movieRecord = _mapper.Map<MovieRecord>(movie);
-                movies.Add(movieRecord);
+
+                if (!invalidMovieIds.Any() && movie.AvailableQuantity < 1)
+                {
+                    notEnoughQuantity.Add(id);
+                    continue;
+                }
             }
 
             if (invalidMovieIds.Any())
@@ -56,36 +63,60 @@ namespace Metflix.BL.MediatR.CommandHandlers.Purchases
                 };
             }
 
-            foreach (var movieId in request.Request.MovieIds)
+            if (notEnoughQuantity.Any())
             {
-                await _userMovieRepository.Add(new UserMovie()
+                return new PurchaseResponse()
                 {
-                    UserId=request.UserId,
-                    MovieId=movieId,
-                    DaysFor=request.Request.Days,                    
-                });
+                    HttpStatusCode = HttpStatusCode.BadRequest,
+                    Message = string.Format(ResponseMessages.NotEnoughQtyMovies, string.Join(", ", notEnoughQuantity))
+                };
             }
 
-            var purchase = new Purchase()
+            var kafkaMessageValue = new PurchaseUserInputData()
             {
-                Id = Guid.NewGuid(),
-                UserId = request.UserId,
-                Movies = movies,
-                LastChanged = DateTime.UtcNow,
+                Id = request.UserId,
+                MovieIds = request.Request.MovieIds,
                 Days = request.Request.Days,
-                DueDate = DateTime.UtcNow.AddDays(request.Request.Days),
-                PurchaseDate = DateTime.UtcNow,
-                TotalPrice = movies.Sum(x => x.PricePerDay) * request.Request.Days,
             };
 
-            await _purchaseRepository.AddPurchase(purchase, cancellationToken);
-            var purchaseDto = _mapper.Map<PurchaseDto>(purchase);
-
-            return new PurchaseResponse()
+            if (PurchaseTempData.PendingPurchases.ContainsKey(request.UserId))
             {
-                HttpStatusCode = HttpStatusCode.Created,
-                Model = purchaseDto,
-            };
+                return new PurchaseResponse()
+                {
+                    HttpStatusCode = HttpStatusCode.BadRequest,
+                    Message = ResponseMessages.PendingPurchase,
+                };
+            }
+
+            PurchaseTempData.PendingPurchases.TryAdd(request.UserId, null);
+
+            await _producer.ProduceAsync(kafkaMessageValue.GetKey(), kafkaMessageValue);
+
+            while (PurchaseTempData.PendingPurchases[request.UserId] is null && !cancellationToken.IsCancellationRequested)
+            { }
+
+            PurchaseResponse purchaseResponse = null!;
+            if (PurchaseTempData.PendingPurchases[request.UserId] != null)
+            {
+                purchaseResponse = new PurchaseResponse()
+                {
+                    Model = _mapper.Map<PurchaseDto>(PurchaseTempData.PendingPurchases[request.UserId]),
+                    HttpStatusCode = HttpStatusCode.Created,
+                };
+            }
+
+            else
+            {
+                purchaseResponse = new PurchaseResponse()
+                {
+                    HttpStatusCode = HttpStatusCode.InternalServerError,
+                    Message = "Something went wrong."
+                };
+            }
+
+            PurchaseTempData.PendingPurchases.TryRemove(request.UserId, out Purchase? value);
+
+            return purchaseResponse;
         }
     }
 }

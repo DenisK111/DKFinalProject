@@ -9,6 +9,7 @@ using Dapper;
 using Metflix.DL.Repositories.Contracts;
 using Metflix.Models.DbModels;
 using Metflix.Models.DbModels.Configurations;
+using Metflix.Models.Responses.Purchases.PurchaseDtos;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -27,24 +28,26 @@ namespace Metflix.DL.Repositories.Implementations.SqlRepositories
             _logger = logger;
             _configuration = configuration;
         }
-        public async Task Add(UserMovie model, CancellationToken cancellationToken = default)
+        public async Task<int> Add(UserMovie model, CancellationToken cancellationToken = default)
         {
             var query = @"INSERT INTO UserMovies
-                            VALUES(@UserId,@MovieId,GetDate(),@DueDate,@IsReturned,GetDate(),@DaysFor)";
+                          VALUES(@UserId,@MovieId,GetDate(),DateAdd(Day,@DaysFor,GetDate()),@IsReturned,GetDate(),@DaysFor)
+                          SELECT CAST(SCOPE_IDENTITY() as int)";
 
             try
             {
                 await using (var conn = new SqlConnection(_configuration.CurrentValue.SqlConnection))
                 {
                     await conn.OpenAsync(cancellationToken);
-                    var result = await conn.QuerySingleOrDefaultAsync<UserMovie>(query, new
+                    var result = await conn.QuerySingleAsync<int>(query, new
                     {
                         UserId = model.UserId,
-                        MovieId = model.MovieId,
-                        DueDate = DateTime.UtcNow.AddDays(model.DaysFor),
+                        MovieId = model.MovieId,                        
                         IsReturned = model.IsReturned,
                         DaysFor = model.DaysFor
-                    });                    
+                    });
+
+                    return result;
                 }
             }
             catch (Exception e)
@@ -53,7 +56,6 @@ namespace Metflix.DL.Repositories.Implementations.SqlRepositories
                 throw;
             }
         }
-
         public async Task<IEnumerable<UserMovie>> GetAll(CancellationToken cancellationToken = default)
         {
             var query = @"SELECT * FROM UserMovies WITH (NOLOCK)";
@@ -74,7 +76,7 @@ namespace Metflix.DL.Repositories.Implementations.SqlRepositories
             }
         }
 
-        public async Task<IEnumerable<UserMovie>> GetAllByUserId(Guid userId, CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<UserMovie>> GetAllByUserId(string userId, CancellationToken cancellationToken = default)
         {
             var query = @"SELECT * FROM USERMOVIES WITH (NOLOCK)
                             WHERE UserId = @UserId";
@@ -92,7 +94,27 @@ namespace Metflix.DL.Repositories.Implementations.SqlRepositories
                 _logger.LogError($"Error in {nameof(GetAllByUserId)}:{e.Message}", e);
                 throw;
             }
+        }
 
+        public async Task<IEnumerable<UserMovieDto>> GetAllUnreturnedByUserId(string userId, CancellationToken cancellationToken = default)
+        {
+            var query = @"SELECT m.Name,um.Id,um.DueDate FROM UserMovies as um
+                            JOIN Movies as m ON m.Id = um.MOVIEID
+                            WHERE um.USERID = @userId AND um.IsReturned = 0;";
+
+            try
+            {
+                await using (var conn = new SqlConnection(_configuration.CurrentValue.SqlConnection))
+                {
+                    await conn.OpenAsync(cancellationToken);
+                    return await conn.QueryAsync<UserMovieDto>(query, new { UserId = userId });
+                }
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Error in {nameof(GetAllUnreturnedByUserId)}:{e.Message}", e);
+                throw;
+            }
         }
 
         public async Task<IEnumerable<UserMovie>> GetAllOverDue(CancellationToken cancellationToken = default)

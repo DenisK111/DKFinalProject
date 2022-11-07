@@ -44,16 +44,25 @@ namespace Metflix.Host.Controllers
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> MakePurchase([FromBody] PurchaseRequest request, CancellationToken cancellationToken)
-        {
-            
+        {            
             var userId = this.GetUserId();
             var result = await _mediator.Send(new MakePurchaseCommand(request, userId),cancellationToken);
-
+                        
             if (result.HttpStatusCode==HttpStatusCode.Created)
             {
                 return CreatedAtAction(nameof(GetPurchaseById), new { Id = result.Model!.Id }, result.Model);
             }
 
+            return this.ProduceResponse(result);
+        }
+        [HttpPost(nameof(ReturnMovie))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> ReturnMovie([FromQuery]int userMovieId, CancellationToken cancellationToken)
+        {
+            var userId = this.GetUserId();
+            var result = await _mediator.Send(new ReturnMovieCommand(userMovieId, userId), cancellationToken);                     
             return this.ProduceResponse(result);
         }
 
@@ -66,7 +75,14 @@ namespace Metflix.Host.Controllers
             var result = await _mediator.Send(new GetPurchaseByIdAndUserIdQuery(id,userId), cancellationToken);
             return this.ProduceResponse(result);
         }
-    }
 
-   
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [HttpGet(nameof(GetCurrentlyTakenMovies))]
+        public async Task<IActionResult> GetCurrentlyTakenMovies(CancellationToken cancellationToken)
+        {
+            var userId = this.GetUserId();
+            var result = await _mediator.Send(new GetCurrentlyTakenMoviesQuery(userId), cancellationToken);
+            return this.ProduceResponse(result);
+        }
+    }   
 }

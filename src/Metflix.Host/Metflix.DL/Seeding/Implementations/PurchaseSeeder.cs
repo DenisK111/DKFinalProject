@@ -86,6 +86,7 @@ namespace Metflix.DL.Seeding.Implementations
                     PurchaseDate = DateTime.UtcNow.AddDays(daysBackPurchased),
                     LastChanged = DateTime.UtcNow.AddDays(daysBackPurchased),
                     TotalPrice = moviesAdded.Sum(x => x.PricePerDay) * days,
+                    UserMovieIds = new List<int>() {random.Next(0, movies.Count), random.Next(movies.Count, movies.Count * 2)},
                 });
             }
 

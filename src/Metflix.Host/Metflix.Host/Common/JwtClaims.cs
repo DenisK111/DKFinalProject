@@ -4,7 +4,6 @@
     {
         public static string Id { get; set; } = "Id";
         public static string Name { get; set; } = "Name";
-        public static string Email { get; set; } = "Email";
-        public static string Role { get; set; } = "Role";        
+        public static string Email { get; set; } = "Email";          
     }
 }

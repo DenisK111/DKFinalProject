@@ -1,9 +1,15 @@
-﻿using Metflix.BL.Services.Contracts;
+﻿using Metflix.BL.Dataflow.Contracts;
+using Metflix.BL.Dataflow.Implementations;
+using Metflix.BL.Services.Contracts;
 using Metflix.BL.Services.Implementations;
 using Metflix.DL.Repositories.Contracts;
 using Metflix.DL.Repositories.Implementations.MongoRepositories;
 using Metflix.DL.Repositories.Implementations.SqlRepositories;
+using Metflix.Host.HostedServices;
+using Metflix.Kafka.Producers;
+using Metflix.Models.Configurations.KafkaSettings.Producers;
 using Metflix.Models.DbModels.Configurations;
+using Metflix.Models.KafkaModels;
 
 namespace Metflix.Host.Extensions
 {
@@ -27,5 +33,33 @@ namespace Metflix.Host.Extensions
 
             return services;
         }
+
+        public static IServiceCollection RegisterKafkaProducers(this IServiceCollection services)
+        {
+            services
+                .AddSingleton<GenericProducer<string, PurchaseUserInputData, KafkaUserPurchaseInputProducerSettings>>()
+                .AddSingleton<GenericProducer<string, PurchaseInfoData, KafkaPurchaseDataProducerSettings>>();
+
+            return services;
+        }
+
+        public static IServiceCollection RegisterHostedServices(this IServiceCollection services)
+        {
+            services
+                .AddHostedService<KafkaUserPurchaseInputConsumer>()
+                .AddHostedService<KafkaPurchaseDataConsumer>();                
+
+            return services;
+        }
+
+        public static IServiceCollection RegisterDataFlow(this IServiceCollection services)
+        {
+            services
+                .AddSingleton<IPurchaseUserInputDataflow, PurchaseUserInputDataFlow>()
+                .AddSingleton<IPurchaseInfoDataflow, PurchaseInfoDataflow>();
+
+            return services;
+        }
+
     }
 }

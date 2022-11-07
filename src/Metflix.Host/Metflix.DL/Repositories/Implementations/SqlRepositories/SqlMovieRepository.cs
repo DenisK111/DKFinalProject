@@ -6,6 +6,7 @@ using System.Linq;
 using System.Reflection;
 using System.Reflection.Metadata.Ecma335;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Dapper;
 using Metflix.DL.Repositories.Contracts;
@@ -15,6 +16,7 @@ using Metflix.Models.Responses.Movies.MovieDtos;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using static MongoDB.Driver.WriteConcern;
 
 namespace Metflix.DL.Repositories.Implementations.SqlRepositories
 {
@@ -139,6 +141,48 @@ namespace Metflix.DL.Repositories.Implementations.SqlRepositories
             }
         }
 
+        public async Task IncreaseAvailableQuantity(int movieId, int amount = 1,CancellationToken cancellationToken = default)
+        {
+            var query = @"UPDATE Movies
+                          SET AvailableQuantity = AvailableQuantity + @Amount
+                          WHERE Id = @Id";
+
+            try
+            {
+                await using (var conn = new SqlConnection(_configuration.CurrentValue.SqlConnection))
+                {
+                    await conn.OpenAsync(cancellationToken);
+                    await conn.ExecuteAsync(query, new { Id = movieId, Amount = amount });
+                }
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Error in {nameof(IncreaseAvailableQuantity)}:{e.Message}", e);
+                throw;
+            }
+        }
+
+        public async Task DecreaseAvailableQuantity(int movieId, int amount = 1, CancellationToken cancellationToken = default)
+        {
+            var query = @"UPDATE Movies
+                          SET AvailableQuantity = AvailableQuantity - @Amount
+                          WHERE Id = @Id";
+
+            try
+            {
+                await using (var conn = new SqlConnection(_configuration.CurrentValue.SqlConnection))
+                {
+                    await conn.OpenAsync(cancellationToken);
+                    await conn.ExecuteAsync(query, new { Id = movieId, Amount = amount });
+                }
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Error in {nameof(DecreaseAvailableQuantity)}:{e.Message}", e);
+                throw;
+            }
+        }
+
         public async Task<Movie?> Update(Movie model, CancellationToken cancellationToken = default)
         {
             var query = @"UPDATE Movies
@@ -159,6 +203,86 @@ namespace Metflix.DL.Repositories.Implementations.SqlRepositories
             catch (Exception e)
             {
                 _logger.LogError($"Error in {nameof(Update)}:{e.Message}", e);
+                throw;
+            }
+        }
+
+        public async Task IncreaseInventory(int movieId, int amount, CancellationToken cancellationToken = default)
+        {
+            var query = @"UPDATE Movies
+                        SET AvailableQuantity = AvailableQuantity + @Amount, TotalQuantity = TotalQuantity + @Amount
+                        WHERE ID = @Id";
+            try
+            {
+                await using (var conn = new SqlConnection(_configuration.CurrentValue.SqlConnection))
+                {
+                    await conn.OpenAsync(cancellationToken);
+                    await conn.ExecuteAsync(query, new { Id = movieId, Amount = amount });
+                }
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Error in {nameof(IncreaseInventory)}:{e.Message}", e);
+                throw;
+            }
+        }
+
+        public async Task DecreaseInventory(int movieId, int amount, CancellationToken cancellationToken = default)
+        {
+            var query = @"UPDATE Movies
+                        SET AvailableQuantity = AvailableQuantity - @Amount, TotalQuantity = TotalQuantity - @Amount
+                        WHERE ID = @Id";
+            try
+            {
+                await using (var conn = new SqlConnection(_configuration.CurrentValue.SqlConnection))
+                {
+                    await conn.OpenAsync(cancellationToken);
+                    await conn.ExecuteAsync(query, new { Id = movieId, Amount = amount });
+                }
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Error in {nameof(DecreaseInventory)}:{e.Message}", e);
+                throw;
+            }
+        }
+
+        public async Task<int> GetCurrentQuantity(int movieId, CancellationToken cancellationToken = default)
+        {
+            var query = @"SELECT AvailableQuantity
+                          FROM MOVIES WHERE Id = @Id";
+
+            try
+            {
+                await using (var conn = new SqlConnection(_configuration.CurrentValue.SqlConnection))
+                {
+                    await conn.OpenAsync(cancellationToken);
+                    return await conn.ExecuteScalarAsync<int>(query, new { Id = movieId});
+                }
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Error in {nameof(GetCurrentQuantity)}:{e.Message}", e);
+                throw;
+            }
+        }
+
+        public async Task<int> GetTotalQuantity(int movieId, CancellationToken cancellationToken = default)
+        {
+            var query = @"SELECT TotalQuantity
+                          FROM MOVIES WHERE Id = @Id";
+
+            try
+            {
+                await using (var conn = new SqlConnection(_configuration.CurrentValue.SqlConnection))
+                {
+                    await conn.OpenAsync(cancellationToken);
+                    return await conn.ExecuteScalarAsync<int>(query, new { Id = movieId });
+                }
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Error in {nameof(GetTotalQuantity)}:{e.Message}", e);
                 throw;
             }
         }

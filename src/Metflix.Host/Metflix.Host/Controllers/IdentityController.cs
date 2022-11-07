@@ -25,7 +25,6 @@ namespace Metflix.Host.Controllers
     {
         private readonly IOptionsMonitor<Jwt> _configuration;
         private readonly IIDentityService _identityService;
-
         public IdentityController(IOptionsMonitor<Jwt> configuration, IIDentityService identityService)
         {
             _configuration = configuration;
@@ -77,7 +76,7 @@ namespace Metflix.Host.Controllers
                         new Claim(JwtClaims.Id, user.Id.ToString()),
                         new Claim(JwtClaims.Name, user.Name ?? string.Empty),                        
                         new Claim(JwtClaims.Email, user.Email ?? string.Empty),
-                        new Claim(JwtClaims.Role,user.Role),
+                        new Claim(user.Role,user.Role),
                     };
 
                 var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration.CurrentValue.Key));

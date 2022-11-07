@@ -1,11 +1,12 @@
-﻿using Metflix.Host.Controllers;
+﻿using Metflix.Host.Common;
+using Metflix.Host.Controllers;
 using Metflix.Models.Responses;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 
 namespace Metflix.Host.Extensions
 {
-    public static class HttpResponseExtensions
+    public static class ControllerExtensions
     {
         public static IActionResult ProduceResponse<T>(this ControllerBase controller, BaseResponse<T> response)
         {
@@ -23,6 +24,11 @@ namespace Metflix.Host.Extensions
                     return controller.NoContent();
                 default: return controller.StatusCode(500);
             }
+        }
+
+        public static string GetUserId(this ControllerBase controller)
+        {
+            return controller.User.FindFirst(JwtClaims.Id)?.Value!;
         }
     }
 }

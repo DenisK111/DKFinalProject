@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 using MongoDB.Driver.Linq;
+using static Dapper.SqlMapper;
 
 namespace Metflix.DL.Repositories.Implementations.MongoRepositories
 {
@@ -16,11 +17,12 @@ namespace Metflix.DL.Repositories.Implementations.MongoRepositories
 
         public MongoPurchaseRepository(IOptionsMonitor<MongoDbSettings> _mongoSettings, ILogger<MongoPurchaseRepository> logger)
         {
-            string connectionString = _mongoSettings.CurrentValue.ConnectionString;
+            var settings = MongoClientSettings.FromConnectionString(_mongoSettings.CurrentValue.ConnectionString);
             string databaseName = _mongoSettings.CurrentValue.DatabaseName;
             string collectionName = _mongoSettings.CurrentValue.CollectionPurchase;
+            settings.ServerApi = new ServerApi(ServerApiVersion.V1);
 
-            var client = new MongoClient(connectionString);
+            var client = new MongoClient(settings);
 
             var database = client.GetDatabase(databaseName);
             _purchaseCollection = database.GetCollection<Purchase>(collectionName);

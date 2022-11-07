@@ -20,5 +20,7 @@ namespace Metflix.Models.Responses.Purchases.PurchaseDtos
         public DateTime DueDate { get; set; }
 
         public Guid UserId { get; set; }
+
+        public IEnumerable<int> UserMovieIds { get; set; } = null!;
     }
 }
