@@ -13,10 +13,13 @@ using Metflix.Models.Configurations.KafkaSettings.Consumers;
 using Metflix.Models.Configurations.KafkaSettings.Producers;
 using Metflix.Models.DbModels.Configurations;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Serilog;
 using Serilog.Sinks.SystemConsole.Themes;
+using StackExchange.Redis;
 
 namespace Metflix.Host
 {
@@ -36,6 +39,7 @@ namespace Metflix.Host
             builder.Services
                 .AddHealthChecks()
                 .AddCheck<SqlHealthCheck>(HealthCheckComponents.SqlServer)
+                .AddCheck<RedisHealthCheck>(HealthCheckComponents.Redis)
                 .AddCheck<MongoDbHealthCheck>(HealthCheckComponents.MongoDb);
 
             // Register Configurations
@@ -54,11 +58,19 @@ namespace Metflix.Host
                 builder.Configuration.GetSection(nameof(KafkaPurchaseDataConsumerSettings)));
             builder.Services.Configure<KafkaPurchaseDataProducerSettings>(
                 builder.Configuration.GetSection(nameof(KafkaPurchaseDataProducerSettings)));
+            builder.Services.Configure<RedisSettings>(
+                builder.Configuration.GetSection(nameof(RedisSettings)));
+            
+            builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
+                 ConnectionMultiplexer.Connect(new ConfigurationOptions
+                 {
+                     EndPoints = { sp.GetRequiredService<IOptionsMonitor<RedisSettings>>().CurrentValue.ConnectionString }
+                 }));
 
             //ADD JWT Authentication
 
-            builder.Services.AddSwaggerGen(x =>
-            {
+            builder.Services.AddSwaggerGen((x) =>
+            {               
                 // ADD Jwt Token
                 var jwtSecurityScheme = new OpenApiSecurityScheme()
                 {

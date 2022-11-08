@@ -12,7 +12,6 @@ namespace Metflix.Models.Configurations
         public string Issuer { get; set; } = null!;
         public string Audience { get; set; } = null!;
         public string Subject { get; set; } = null!;
-
-        public int DurationInMinutes { get; set; }
+        public int DurationInMinutes { get; set; }        
     }
 }

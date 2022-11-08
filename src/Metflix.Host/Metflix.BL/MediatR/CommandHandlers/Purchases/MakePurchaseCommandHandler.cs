@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
 using MediatR;
-using Metflix.BL.TempData;
+using MessagePack;
 using Metflix.DL.Repositories.Contracts;
 using Metflix.Kafka.Producers;
 using Metflix.Models.Configurations.KafkaSettings.Producers;
@@ -21,16 +21,18 @@ namespace Metflix.BL.MediatR.CommandHandlers.Purchases
 {
     public class MakePurchaseCommandHandler : IRequestHandler<MakePurchaseCommand, PurchaseResponse>
     {
-        private readonly IMapper _mapper;       
+        private readonly IMapper _mapper;
         private readonly IMovieRepository _movieRepository;
         private readonly GenericProducer<string, PurchaseUserInputData, KafkaUserPurchaseInputProducerSettings> _producer;
+        private readonly ITempPurchaseDataRepository _tempPurchaseRepository;
 
-        public MakePurchaseCommandHandler(IMapper mapper, IMovieRepository movieRepository, GenericProducer<string, PurchaseUserInputData, KafkaUserPurchaseInputProducerSettings> producer)
+
+        public MakePurchaseCommandHandler(IMapper mapper, IMovieRepository movieRepository, GenericProducer<string, PurchaseUserInputData, KafkaUserPurchaseInputProducerSettings> producer, ITempPurchaseDataRepository tempPurchaseRepository)
         {
             _mapper = mapper;
-         
             _movieRepository = movieRepository;
             _producer = producer;
+            _tempPurchaseRepository = tempPurchaseRepository;
         }
 
         public async Task<PurchaseResponse> Handle(MakePurchaseCommand request, CancellationToken cancellationToken)
@@ -78,8 +80,10 @@ namespace Metflix.BL.MediatR.CommandHandlers.Purchases
                 MovieIds = request.Request.MovieIds,
                 Days = request.Request.Days,
             };
+            var key = request.UserId;
 
-            if (PurchaseTempData.PendingPurchases.ContainsKey(request.UserId))
+
+            if (await _tempPurchaseRepository.ContainsKeyAsync(key))
             {
                 return new PurchaseResponse()
                 {
@@ -88,19 +92,27 @@ namespace Metflix.BL.MediatR.CommandHandlers.Purchases
                 };
             }
 
-            PurchaseTempData.PendingPurchases.TryAdd(request.UserId, null);
+            await _tempPurchaseRepository.SetOrUpdateEntryAsync(request.UserId, Array.Empty<byte>());
 
             await _producer.ProduceAsync(kafkaMessageValue.GetKey(), kafkaMessageValue);
 
-            while (PurchaseTempData.PendingPurchases[request.UserId] is null && !cancellationToken.IsCancellationRequested)
-            { }
+            var returnedValue = await _tempPurchaseRepository.GetValueAsync(key);
+
+            var retryCount = 10;
+            while (!returnedValue.Any() && retryCount != 0)
+            {
+                await Task.Delay(1000);
+                returnedValue = await _tempPurchaseRepository.GetValueAsync(key);
+                retryCount--;
+            }
 
             PurchaseResponse purchaseResponse = null!;
-            if (PurchaseTempData.PendingPurchases[request.UserId] != null)
+            if (returnedValue.Any())
             {
+                var returnedPurchase = MessagePackSerializer.Deserialize<Purchase>(returnedValue);
                 purchaseResponse = new PurchaseResponse()
                 {
-                    Model = _mapper.Map<PurchaseDto>(PurchaseTempData.PendingPurchases[request.UserId]),
+                    Model = _mapper.Map<PurchaseDto>(returnedPurchase),
                     HttpStatusCode = HttpStatusCode.Created,
                 };
             }
@@ -114,7 +126,7 @@ namespace Metflix.BL.MediatR.CommandHandlers.Purchases
                 };
             }
 
-            PurchaseTempData.PendingPurchases.TryRemove(request.UserId, out Purchase? value);
+            await _tempPurchaseRepository.DeleteEntryAsync(key);
 
             return purchaseResponse;
         }

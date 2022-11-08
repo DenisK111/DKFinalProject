@@ -5,8 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 using AutoMapper;
+using MessagePack;
 using Metflix.BL.Dataflow.Contracts;
-using Metflix.BL.TempData;
+
 using Metflix.DL.Repositories.Contracts;
 using Metflix.Models.DataflowModels;
 using Metflix.Models.DbModels;
@@ -21,13 +22,15 @@ namespace Metflix.BL.Dataflow.Implementations
         private readonly IPurchaseRepository _purchaseRepository;
         private readonly TransformBlock<PurchaseInfoData, PurchaseInfoData> _adjustInventoryBlock;
         private readonly IMapper _mapper;
+        private readonly ITempPurchaseDataRepository _tempPurchaseRepository;
 
-        public PurchaseInfoDataflow(IMovieRepository movieRepository, IUserMovieRepository userMovieRepository, IPurchaseRepository purchaseRepository, IMapper mapper)
+        public PurchaseInfoDataflow(IMovieRepository movieRepository, IUserMovieRepository userMovieRepository, IPurchaseRepository purchaseRepository, IMapper mapper, ITempPurchaseDataRepository tempPurchaseRepository)
         {
             _movieRepository = movieRepository;
             _userMovieRepository = userMovieRepository;
             _purchaseRepository = purchaseRepository;
             _mapper = mapper;
+            _tempPurchaseRepository = tempPurchaseRepository;
 
             var options = new ExecutionDataflowBlockOptions()
             {
@@ -45,7 +48,7 @@ namespace Metflix.BL.Dataflow.Implementations
             };
 
             _adjustInventoryBlock.LinkTo(writeToUserMoviesBlock, linkOptions);
-            writeToUserMoviesBlock.LinkTo(recordPurchaseBlock, linkOptions);
+            writeToUserMoviesBlock.LinkTo(recordPurchaseBlock, linkOptions);            
         }
 
         public void Dispose()
@@ -105,8 +108,8 @@ namespace Metflix.BL.Dataflow.Implementations
             };
 
             await _purchaseRepository.AddPurchase(purchase);
-
-            PurchaseTempData.PendingPurchases.TryUpdate(purchase.UserId, purchase,null);
+            var purchaseAsByteArray = MessagePackSerializer.Serialize(purchase);
+            await _tempPurchaseRepository.SetOrUpdateEntryAsync(purchase.UserId,purchaseAsByteArray);          
         }
     }
 }

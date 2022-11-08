@@ -4,6 +4,7 @@ using Metflix.BL.Services.Contracts;
 using Metflix.BL.Services.Implementations;
 using Metflix.DL.Repositories.Contracts;
 using Metflix.DL.Repositories.Implementations.MongoRepositories;
+using Metflix.DL.Repositories.Implementations.RedisRepositories;
 using Metflix.DL.Repositories.Implementations.SqlRepositories;
 using Metflix.Host.HostedServices;
 using Metflix.Kafka.Producers;
@@ -21,7 +22,8 @@ namespace Metflix.Host.Extensions
                 .AddSingleton<IMovieRepository, SqlMovieRepository>()
                 .AddSingleton<IIdentityRepository, SqlIdentityRepository>()
                 .AddSingleton<IUserMovieRepository, SqlUserMovieRepository>()
-                .AddSingleton<IPurchaseRepository, MongoPurchaseRepository>();
+                .AddSingleton<IPurchaseRepository, MongoPurchaseRepository>()
+                .AddSingleton<ITempPurchaseDataRepository, RedisTempPurchaseDataRepository>();
 
             return services;
         }
