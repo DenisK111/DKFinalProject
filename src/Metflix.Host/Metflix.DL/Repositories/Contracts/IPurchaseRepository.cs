@@ -16,6 +16,6 @@ namespace Metflix.DL.Repositories.Contracts
         Task<Purchase?> GetById(Guid id,CancellationToken cancellationToken = default);
         Task<Purchase?> GetByIdAndUserId(Guid id,string userId, CancellationToken cancellationToken = default);
 
-        Task<decimal> GetTotalSales(int minutes, CancellationToken cancellationToken = default);
+        Task<decimal> GetTotalSales(DateTime startDate, DateTime endDate, CancellationToken cancellationToken = default);
     }
 }

@@ -1,19 +1,25 @@
 ﻿using System.Net;
 using MediatR;
 using Metflix.DL.Repositories.Contracts;
+using Metflix.Host.Common;
 using Metflix.Host.Extensions;
 using Metflix.Models.DbModels;
+using Metflix.Models.DbModels.Helpers;
 using Metflix.Models.Mediatr.Commands;
 using Metflix.Models.Mediatr.Commands.Movies;
 using Metflix.Models.Mediatr.Queries;
 using Metflix.Models.Mediatr.Queries.Movies;
 using Metflix.Models.Requests.Movies;
+using Metflix.Models.Responses.Movies;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Metflix.Host.Controllers
 {
     [ApiController]
     [Route("[controller]")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = UserRoles.Admin)]
     public class MoviesController : ControllerBase
     {
         private readonly IMediator _mediator;
@@ -72,5 +78,25 @@ namespace Metflix.Host.Controllers
             var result = await _mediator.Send(new DeleteMovieCommand(id), token);
             return this.ProduceResponse(result);           
         }
+        [HttpPut(nameof(AddInventory))]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<IActionResult> AddInventory(AddInventoryRequest request, CancellationToken token)
+        {
+            var userId = this.GetUserId();
+            var result = await _mediator.Send(new AddInventoryCommand(request,userId), token);
+            return this.ProduceResponse(result);
+        }
+
+        [HttpPut(nameof(RemoveInventory))]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> RemoveInventory(RemoveInventoryRequest request, CancellationToken token)
+        {
+            var userId = this.GetUserId();
+            var result = await _mediator.Send(new RemoveInventoryCommand(request,userId), token);
+            return this.ProduceResponse(result);
+        }       
     }
 }

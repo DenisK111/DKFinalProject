@@ -14,5 +14,7 @@
         public static string NoIdForUser { get;} = "You do not have a purchase with this Id.";
         public static string PendingPurchase { get;} = "You currently have a pending purchase. Please wait before your purchase completes before making a new purchase."; 
         public static string MovieAlreadyReturned { get;} = "Movie has already been returned.";
+        public static string NotEnoughInventoryToRemove { get;} = "Not enough inventory to remove";
+        public static string InvalidUser { get;} = "Invalid User";
     }
 }

@@ -7,6 +7,8 @@ using Metflix.Models.Mediatr.Queries.Movies;
 using Metflix.Models.Mediatr.Queries.Purchases;
 using Metflix.Models.Requests.Purchase;
 using Metflix.Models.Responses.Purchases;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 
@@ -14,6 +16,7 @@ namespace Metflix.Host.Controllers
 {
     [ApiController]
     [Route("[controller]")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class ClientController : ControllerBase
     {
         private readonly IMediator _mediator;
@@ -25,6 +28,7 @@ namespace Metflix.Host.Controllers
 
         [HttpGet(nameof(GetAvailableMovies))]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [AllowAnonymous]
         public async Task<IActionResult> GetAvailableMovies(CancellationToken cancellationToken)
         {
             var result = await _mediator.Send(new GetAvailableMoviesQuery(),cancellationToken);

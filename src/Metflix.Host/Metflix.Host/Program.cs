@@ -5,6 +5,7 @@ using MediatR;
 using Metflix.BL.MediatR.QueryHandlers.Movies;
 using Metflix.DL.Seeding;
 using Metflix.DL.Seeding.Contracts;
+using Metflix.Host.Common;
 using Metflix.Host.Extensions;
 using Metflix.Host.HealthChecks;
 using Metflix.Host.Middleware.ErrorHandlerMiddleware;
@@ -12,6 +13,7 @@ using Metflix.Models.Configurations;
 using Metflix.Models.Configurations.KafkaSettings.Consumers;
 using Metflix.Models.Configurations.KafkaSettings.Producers;
 using Metflix.Models.DbModels.Configurations;
+using Metflix.Models.DbModels.Helpers;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
@@ -58,9 +60,13 @@ namespace Metflix.Host
                 builder.Configuration.GetSection(nameof(KafkaPurchaseDataConsumerSettings)));
             builder.Services.Configure<KafkaPurchaseDataProducerSettings>(
                 builder.Configuration.GetSection(nameof(KafkaPurchaseDataProducerSettings)));
+            builder.Services.Configure<KafkaInventoryChangesConsumerSettings>(
+                builder.Configuration.GetSection(nameof(KafkaInventoryChangesConsumerSettings)));
+            builder.Services.Configure<KafkaInventoryChangesProducerSettings>(
+                builder.Configuration.GetSection(nameof(KafkaInventoryChangesProducerSettings)));
             builder.Services.Configure<RedisSettings>(
                 builder.Configuration.GetSection(nameof(RedisSettings)));
-            
+
             builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
                  ConnectionMultiplexer.Connect(new ConfigurationOptions
                  {
@@ -70,16 +76,16 @@ namespace Metflix.Host
             //ADD JWT Authentication
 
             builder.Services.AddSwaggerGen((x) =>
-            {               
+            {
                 // ADD Jwt Token
                 var jwtSecurityScheme = new OpenApiSecurityScheme()
                 {
-                    Scheme = "bearer",
-                    BearerFormat = "JWT",
-                    Name = "JWT Authentication",
+                    Scheme = JwtSettings.Scheme,
+                    BearerFormat = JwtSettings.BearerFormat,
+                    Name = JwtSettings.Name,
                     In = ParameterLocation.Header,
                     Type = SecuritySchemeType.Http,
-                    Description = "Put **_ONLY_** your JWT Bearer token in the textbox below",
+                    Description = JwtSettings.Description,
                     Reference = new OpenApiReference()
                     {
                         Id = JwtBearerDefaults.AuthenticationScheme,
@@ -109,6 +115,11 @@ namespace Metflix.Host
                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
                     };
                 });
+
+            builder.Services.AddAuthorization(options =>
+            {
+                options.AddPolicy(UserRoles.Admin, policy => policy.RequireClaim(UserRoles.Admin));
+            });
 
             // Add services to the container.
 

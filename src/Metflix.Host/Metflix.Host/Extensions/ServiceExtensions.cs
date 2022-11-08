@@ -23,6 +23,7 @@ namespace Metflix.Host.Extensions
                 .AddSingleton<IIdentityRepository, SqlIdentityRepository>()
                 .AddSingleton<IUserMovieRepository, SqlUserMovieRepository>()
                 .AddSingleton<IPurchaseRepository, MongoPurchaseRepository>()
+                .AddSingleton<IInventoryLogRepository, MongoInventoryLogRepository>()
                 .AddSingleton<ITempPurchaseDataRepository, RedisTempPurchaseDataRepository>();
 
             return services;
@@ -31,7 +32,8 @@ namespace Metflix.Host.Extensions
         public static IServiceCollection RegisterServices(this IServiceCollection services)
         {
             services
-                .AddTransient<IIDentityService, IdentityService>();
+                .AddTransient<IIDentityService, IdentityService>()
+                .AddSingleton<IInventoryService,InventoryService>();
 
             return services;
         }
@@ -40,6 +42,7 @@ namespace Metflix.Host.Extensions
         {
             services
                 .AddSingleton<GenericProducer<string, PurchaseUserInputData, KafkaUserPurchaseInputProducerSettings>>()
+                .AddSingleton<GenericProducer<Guid, InventoryChangeData, KafkaInventoryChangesProducerSettings>>()
                 .AddSingleton<GenericProducer<string, PurchaseInfoData, KafkaPurchaseDataProducerSettings>>();
 
             return services;
@@ -49,6 +52,7 @@ namespace Metflix.Host.Extensions
         {
             services
                 .AddHostedService<KafkaUserPurchaseInputConsumer>()
+                .AddHostedService<KafkaInventoryChangesConsumer>()
                 .AddHostedService<KafkaPurchaseDataConsumer>();                
 
             return services;

@@ -16,7 +16,7 @@ namespace Metflix.Kafka.Producers
 
         private readonly IProducer<TKey, TValue> _producer;
         private readonly IOptionsMonitor<TSettings> _producerSettings;
-        private readonly TopicPartition _topicParition;
+
 
         public GenericProducer(IOptionsMonitor<TSettings> producerSettings)
         {
@@ -28,8 +28,6 @@ namespace Metflix.Kafka.Producers
                 .SetKeySerializer(new MsgSerializer<TKey>())
                 .SetValueSerializer(new MsgSerializer<TValue>())
                 .Build();
-
-            _topicParition = new TopicPartition(_producerSettings.CurrentValue.Topic, new Partition(_producerSettings.CurrentValue.Partition));
         }
 
         public void Dispose()
@@ -45,7 +43,7 @@ namespace Metflix.Kafka.Producers
                 Value = value,
             };
 
-            await _producer.ProduceAsync(_topicParition, msg);
+            await _producer.ProduceAsync(_producerSettings.CurrentValue.Topic, msg);
         }
 
     }

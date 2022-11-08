@@ -39,7 +39,7 @@ namespace Metflix.DL.Repositories.Implementations.MongoRepositories
             {
                 _logger.LogError($"Error in {nameof(AddPurchase)}");
                 throw;
-            }           
+            }         
            
         }
 
@@ -111,6 +111,11 @@ namespace Metflix.DL.Repositories.Implementations.MongoRepositories
                 _logger.LogError($"Error in {nameof(GetTotalSales)}");
                 throw;
             }            
+        }
+
+        public async Task<decimal> GetTotalSales(DateTime startDate, DateTime endDate, CancellationToken cancellationToken = default)
+        {
+            return 0;
         }
     }
 }

@@ -7,11 +7,10 @@ namespace Metflix.Host.Validators.IdentityValidators
     public class RegisterRequestValidator : AbstractValidator<RegisterRequest>
     {
         public RegisterRequestValidator()
-        {
+        {            
             RuleFor(c => c.DateOfBirth)
-            .Must(x => DateTime.TryParseExact(x, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out _))
-            .When(x => !string.IsNullOrWhiteSpace(x.DateOfBirth))
-            .WithMessage("Date should be in yyyy-MM-dd format");
+            .MustBeValidDateTime<RegisterRequest, string>()
+            .When(x => !string.IsNullOrWhiteSpace(x.DateOfBirth));            
 
             RuleFor(c => c.Email)
                 .NotEmpty()

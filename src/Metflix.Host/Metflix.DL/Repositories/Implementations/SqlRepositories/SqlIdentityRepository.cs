@@ -67,12 +67,32 @@ namespace Metflix.DL.Repositories.Implementations.SqlRepositories
             }
             catch (Exception e)
             {
-                _logger.LogError($"Error in {nameof(CheckIfUserExists)}:{e.Message}", e);
+                _logger.LogError($"Error in {nameof(CreateUser)}:{e.Message}", e);
                 throw;
             }
 
             return false;
 
+        }
+
+        public async Task<UserInfo> GetById(string id, CancellationToken cancellationToken = default)
+        {
+            var query = @"SELECT * FROM USERS
+                            WHERE Id = @Id";
+
+            try
+            {
+                await using (var conn = new SqlConnection(_configuration.CurrentValue.SqlConnection))
+                {
+                    await conn.OpenAsync(cancellationToken);
+                    return await conn.QueryFirstAsync<UserInfo>(query, new { Id = id });                     
+                }
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Error in {nameof(GetById)}:{e.Message}", e);
+                throw;
+            }            
         }
 
         public async Task<UserInfo?> GetUserByEmail(string email, CancellationToken cancellationToken = default)
@@ -85,17 +105,14 @@ namespace Metflix.DL.Repositories.Implementations.SqlRepositories
                 await using (var conn = new SqlConnection(_configuration.CurrentValue.SqlConnection))
                 {
                     await conn.OpenAsync(cancellationToken);
-                    var result = await conn.QueryFirstOrDefaultAsync<UserInfo>(query, new { Email = email });
-                    if (result != null) return result;
+                    return await conn.QueryFirstAsync<UserInfo>(query, new { Email = email });                    
                 }
             }
             catch (Exception e)
             {
                 _logger.LogError($"Error in {nameof(CheckIfUserExists)}:{e.Message}", e);
                 throw;
-            }
-
-            return null;
+            }           
         }
     }
 }

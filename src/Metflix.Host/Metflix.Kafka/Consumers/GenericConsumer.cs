@@ -29,8 +29,7 @@ namespace Metflix.Kafka.Consumers
                 .SetKeyDeserializer(new MsgDeserializer<TKey>())
                 .SetValueDeserializer(new MsgDeserializer<TValue>())
                 .Build();
-            _consumer.Subscribe(kafkaSettings.CurrentValue.Topic);
-            _consumer.Assign(new TopicPartition(kafkaSettings.CurrentValue.Topic, new Partition(kafkaSettings.CurrentValue.Partition)));
+            _consumer.Subscribe(kafkaSettings.CurrentValue.Topic);            
         }
 
         public abstract Task HandleMessage(Message<TKey,TValue> message, CancellationToken cancellationToken);        
