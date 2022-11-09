@@ -4,12 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using MediatR;
-using Metflix.Models.Requests.Reports;
 using Metflix.Models.Responses.Reports;
 
 namespace Metflix.Models.Mediatr.Queries.Reports
 {
-    public record GetTotalSalesQuery(TimePeriodRequest request) : IRequest<TotalSalesResponse>
+    public record GetOverDueUserMoviesQuery : IRequest<UserMoviesOverdueResponse>
     {
     }
 }

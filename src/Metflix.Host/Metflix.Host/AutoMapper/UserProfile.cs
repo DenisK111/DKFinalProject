@@ -13,7 +13,7 @@ namespace Metflix.Host.AutoMapper
         {
             CreateMap<RegisterRequest,UserInfo>()
                 .ForMember(x=>x.Role,y=>y.MapFrom(s=>UserRoles.User))
-                .ForMember(x=>x.DateOfBirth,y=>y.MapFrom(s=>DateTime.ParseExact(s.DateOfBirth,"yyyy-MM-dd",CultureInfo.InvariantCulture)))               
+                .ForMember(x=>x.DateOfBirth,y=>y.MapFrom(s=>s.DateOfBirth.TryParseExactAcceptableFormats()))               
                 .ForMember(x=>x.Password,y=>y.MapFrom(s=>CustomPasswordHasher.GetSHA512Password(s.Password)));
         }
     }

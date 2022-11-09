@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Metflix.Models.Requests
+namespace Metflix.Models.Requests.Reports
 {
     public class TimePeriodRequest
     {

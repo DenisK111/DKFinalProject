@@ -125,14 +125,14 @@ namespace Metflix.Host
 
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-            builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSingleton<IDbSeeder, DbSeeder>();
+            builder.Services.AddEndpointsApiExplorer();            
             builder.Services.AddAutoMapper(typeof(Program));
             builder.Services.AddMediatR(typeof(GetAllMoviesQueryHandler).Assembly);
             builder.Services
                 .AddFluentValidationAutoValidation()
                 .AddFluentValidationClientsideAdapters();
             builder.Services.AddValidatorsFromAssemblyContaining(typeof(Program));
+            builder.Services.AddSingleton<IDbSeeder, DbSeeder>();
 
             //Register Service Extensions
 

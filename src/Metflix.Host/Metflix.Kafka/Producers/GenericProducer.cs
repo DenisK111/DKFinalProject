@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Confluent.Kafka;
+using Metflix.Kafka.Contracts;
 using Metflix.Kafka.Serialization;
 using Metflix.Kafka.Settings;
 using Microsoft.Extensions.Options;
@@ -12,12 +13,11 @@ namespace Metflix.Kafka.Producers
 {
     public class GenericProducer<TKey, TValue, TSettings> : IDisposable
        where TSettings : KafkaProducerSettings
+       where TValue : class, IKafkaItem<TKey>
+       where TKey : notnull
     {
-
         private readonly IProducer<TKey, TValue> _producer;
         private readonly IOptionsMonitor<TSettings> _producerSettings;
-
-
         public GenericProducer(IOptionsMonitor<TSettings> producerSettings)
         {
             _producerSettings = producerSettings;

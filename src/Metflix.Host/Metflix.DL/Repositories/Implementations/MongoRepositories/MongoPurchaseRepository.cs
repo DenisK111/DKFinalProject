@@ -95,27 +95,24 @@ namespace Metflix.DL.Repositories.Implementations.MongoRepositories
                 throw;
             }
         }
+       
 
-        public async Task<decimal> GetTotalSales(int minutes, CancellationToken cancellationToken = default)
+        public async Task<decimal> GetTotalSales(DateTime startDate, DateTime endDate, CancellationToken cancellationToken = default)
         {
             try
             {
-                return (await _purchaseCollection
+                return ((await _purchaseCollection
                .AsQueryable()
-               .Where(x => x.PurchaseDate >= DateTime.UtcNow.AddMinutes(minutes * -1))
+               .Where(x => x.PurchaseDate >= startDate && x.PurchaseDate <= endDate)
                .Select(x => x.TotalPrice)
-               .SumAsync());                          
+               .ToListAsync())
+               .Sum());
             }
             catch
             {
                 _logger.LogError($"Error in {nameof(GetTotalSales)}");
                 throw;
-            }            
-        }
-
-        public async Task<decimal> GetTotalSales(DateTime startDate, DateTime endDate, CancellationToken cancellationToken = default)
-        {
-            return 0;
+            }
         }
     }
 }

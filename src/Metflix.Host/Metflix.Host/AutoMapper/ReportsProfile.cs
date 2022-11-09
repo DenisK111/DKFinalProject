@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Metflix.Models.DbModels;
 using Metflix.Models.KafkaModels;
+using Metflix.Models.Responses.Reports.ReportDtos;
 
 namespace Metflix.Host.AutoMapper
 {
@@ -9,6 +10,7 @@ namespace Metflix.Host.AutoMapper
         public ReportsProfile()
         {
             CreateMap<InventoryChangeData, InventoryLog>();
+            CreateMap<UserMovie, UserMovieOverDueDto>();
         }
     }
 }

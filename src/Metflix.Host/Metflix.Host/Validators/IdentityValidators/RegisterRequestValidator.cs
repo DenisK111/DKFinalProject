@@ -10,7 +10,7 @@ namespace Metflix.Host.Validators.IdentityValidators
         {            
             RuleFor(c => c.DateOfBirth)
             .MustBeValidDateTime<RegisterRequest, string>()
-            .When(x => !string.IsNullOrWhiteSpace(x.DateOfBirth));            
+            .WithMessage(ValidationMessages.InvalidDateTimeFormat);            
 
             RuleFor(c => c.Email)
                 .NotEmpty()

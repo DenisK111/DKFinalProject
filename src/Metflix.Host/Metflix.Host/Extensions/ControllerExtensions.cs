@@ -8,7 +8,7 @@ namespace Metflix.Host.Extensions
 {
     public static class ControllerExtensions
     {
-        public static IActionResult ProduceResponse<T>(this ControllerBase controller, BaseResponse<T> response)
+        public static IActionResult ProduceResponse<T>(this ControllerBase controller, BaseResponse<T> response,string actionName = default!,object routeValues = default!)
         {
             switch (response.HttpStatusCode)
             {
@@ -22,6 +22,8 @@ namespace Metflix.Host.Extensions
                     return controller.Conflict(new ErrorResponse() { Error = response.Message });
                 case HttpStatusCode.NoContent:
                     return controller.NoContent();
+                case HttpStatusCode.Created:
+                    return controller.CreatedAtAction(actionName,routeValues, response.Model);
                 default: return controller.StatusCode(500);
             }
         }

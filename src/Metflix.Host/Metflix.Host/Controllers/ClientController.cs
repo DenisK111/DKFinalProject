@@ -31,7 +31,7 @@ namespace Metflix.Host.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> GetAvailableMovies(CancellationToken cancellationToken)
         {
-            var result = await _mediator.Send(new GetAvailableMoviesQuery(),cancellationToken);
+            var result = await _mediator.Send(new GetAvailableMoviesQuery(), cancellationToken);
             return this.ProduceResponse(result);
         }
 
@@ -40,7 +40,7 @@ namespace Metflix.Host.Controllers
         public async Task<IActionResult> GetMyPurchases(CancellationToken cancellationToken)
         {
             var userId = this.GetUserId();
-            var result = await _mediator.Send(new GetMyPurchasesQuery(userId),cancellationToken);
+            var result = await _mediator.Send(new GetMyPurchasesQuery(userId), cancellationToken);
             return this.ProduceResponse(result);
         }
 
@@ -48,25 +48,19 @@ namespace Metflix.Host.Controllers
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> MakePurchase([FromBody] PurchaseRequest request, CancellationToken cancellationToken)
-        {            
+        {
             var userId = this.GetUserId();
-            var result = await _mediator.Send(new MakePurchaseCommand(request, userId),cancellationToken);
-                        
-            if (result.HttpStatusCode==HttpStatusCode.Created)
-            {
-                return CreatedAtAction(nameof(GetPurchaseById), new { Id = result.Model!.Id }, result.Model);
-            }
-
-            return this.ProduceResponse(result);
+            var result = await _mediator.Send(new MakePurchaseCommand(request, userId), cancellationToken);
+            return this.ProduceResponse(result, nameof(GetPurchaseById), new { Id = result.Model?.Id });
         }
         [HttpPost(nameof(ReturnMovie))]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> ReturnMovie([FromQuery]int userMovieId, CancellationToken cancellationToken)
+        public async Task<IActionResult> ReturnMovie([FromBody] ReturnMovieRequest request, CancellationToken cancellationToken)
         {
             var userId = this.GetUserId();
-            var result = await _mediator.Send(new ReturnMovieCommand(userMovieId, userId), cancellationToken);                     
+            var result = await _mediator.Send(new ReturnMovieCommand(request, userId), cancellationToken);
             return this.ProduceResponse(result);
         }
 
@@ -76,7 +70,7 @@ namespace Metflix.Host.Controllers
         public async Task<IActionResult> GetPurchaseById(Guid id, CancellationToken cancellationToken)
         {
             var userId = this.GetUserId();
-            var result = await _mediator.Send(new GetPurchaseByIdAndUserIdQuery(id,userId), cancellationToken);
+            var result = await _mediator.Send(new GetPurchaseByIdAndUserIdQuery(id, userId), cancellationToken);
             return this.ProduceResponse(result);
         }
 
@@ -88,5 +82,5 @@ namespace Metflix.Host.Controllers
             var result = await _mediator.Send(new GetCurrentlyTakenMoviesQuery(userId), cancellationToken);
             return this.ProduceResponse(result);
         }
-    }   
+    }
 }

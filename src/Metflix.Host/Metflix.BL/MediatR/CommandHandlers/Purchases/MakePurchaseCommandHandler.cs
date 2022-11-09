@@ -82,7 +82,6 @@ namespace Metflix.BL.MediatR.CommandHandlers.Purchases
             };
             var key = request.UserId;
 
-
             if (await _tempPurchaseRepository.ContainsKeyAsync(key))
             {
                 return new PurchaseResponse()
@@ -98,10 +97,10 @@ namespace Metflix.BL.MediatR.CommandHandlers.Purchases
 
             var returnedValue = await _tempPurchaseRepository.GetValueAsync(key);
 
-            var retryCount = 10;
+            var retryCount = 15;
             while (!returnedValue.Any() && retryCount != 0)
             {
-                await Task.Delay(1000);
+                await Task.Delay(200);
                 returnedValue = await _tempPurchaseRepository.GetValueAsync(key);
                 retryCount--;
             }

@@ -1,6 +1,7 @@
 ﻿using System.Globalization;
 using FluentValidation;
 using Metflix.Models.Requests.Movies;
+using Utils;
 
 namespace Metflix.Host.Validators
 {
@@ -15,10 +16,9 @@ namespace Metflix.Host.Validators
 
         public static IRuleBuilderOptions<T, string> MustBeValidDateTime<T, TElement>(this IRuleBuilder<T, string> ruleBuilder)
         {
-            string[] formats = { "yyyy-MM-dd hh:mm:ss", "yyyy-MM-dd" };
             return ruleBuilder
-             .Must(x => DateTime.TryParseExact(x, formats, CultureInfo.InvariantCulture, DateTimeStyles.None, out _))            
-            .WithMessage("Date should be in yyyy-MM-dd format or yyyy-MM-dd hh:mm:ss format");
+             .Must(x => DateTime.TryParseExact(x.Trim(), DateTimeFormats.AcceptableInputFormats, CultureInfo.InvariantCulture, DateTimeStyles.None, out _));            
+            
         }
     }
 }

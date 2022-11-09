@@ -29,7 +29,7 @@ namespace Metflix.BL.MediatR.CommandHandlers.Purchases
 
         public async Task<ReturnMovieResponse> Handle(ReturnMovieCommand request, CancellationToken cancellationToken)
         {
-            var userMovie = await _userMovieRepository.GetById(request.userMovieId, cancellationToken);
+            var userMovie = await _userMovieRepository.GetById(request.request.MovieId, cancellationToken);
             if (userMovie == null)
             {
                 return new ReturnMovieResponse()
@@ -48,12 +48,12 @@ namespace Metflix.BL.MediatR.CommandHandlers.Purchases
                 };
             }
 
-            if (await _userMovieRepository.MarkAsReturned(request.userMovieId, cancellationToken))
+            if (await _userMovieRepository.MarkAsReturned(request.request.MovieId, cancellationToken))
             {
                 await _movierepository.IncreaseAvailableQuantity(userMovie.MovieId, cancellationToken:cancellationToken);
             } 
 
-            var movie = await _movierepository.GetById(request.userMovieId, cancellationToken);
+            var movie = await _movierepository.GetById(request.request.MovieId, cancellationToken);
 
             return new ReturnMovieResponse()
             {

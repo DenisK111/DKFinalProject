@@ -4,7 +4,7 @@ using Metflix.Host.Extensions;
 using Metflix.Models.DbModels.Helpers;
 using Metflix.Models.Mediatr.Commands.Movies;
 using Metflix.Models.Mediatr.Queries.Reports;
-using Metflix.Models.Requests;
+using Metflix.Models.Requests.Reports;
 using Metflix.Models.Responses.Movies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -31,10 +31,19 @@ namespace Metflix.Host.Controllers
             var result = await _mediator.Send(new GetInventoryLogQuery(), token);
             return this.ProduceResponse(result);
         }
-
-        public async Task<IActionResult> GetTotalSalesForPeriod(TimePeriodRequest request,CancellationToken token)
+        [HttpGet(nameof(GetTotalSalesForPeriod))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetTotalSalesForPeriod([FromQuery]TimePeriodRequest request,CancellationToken token)
         {
             var result = await _mediator.Send(new GetTotalSalesQuery(request), token);
+            return this.ProduceResponse(result);
+        }
+
+        [HttpGet(nameof(GetOverDueUserMovies))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetOverDueUserMovies(CancellationToken token)
+        {
+            var result = await _mediator.Send(new GetOverDueUserMoviesQuery(), token);
             return this.ProduceResponse(result);
         }
     }

@@ -44,8 +44,7 @@ namespace Metflix.BL.Dataflow.Implementations
         }
 
         private async Task ProduceToTopic(PurchaseInfoData purchaseInfoData)
-        {
-            Console.WriteLine(purchaseInfoData);
+        {            
             await _producer.ProduceAsync(purchaseInfoData.GetKey(), purchaseInfoData);            
         }
 

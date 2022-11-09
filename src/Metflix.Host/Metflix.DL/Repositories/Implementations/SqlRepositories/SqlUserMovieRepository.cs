@@ -119,8 +119,9 @@ namespace Metflix.DL.Repositories.Implementations.SqlRepositories
 
         public async Task<IEnumerable<UserMovie>> GetAllOverDue(CancellationToken cancellationToken = default)
         {
-            var query = @"SELECT * FROM USERMOVIES WITH (NOLOCK)
-                            WHERE GETDATE() > DueDate";
+            var query = @"SELECT * FROM UserMovies
+                          WHERE GETDATE() > DueDate AND IsReturned = 0
+                          Order By DueDate";
 
             try
             {
