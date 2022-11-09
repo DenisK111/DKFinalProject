@@ -11,17 +11,17 @@ using Utils;
 
 namespace Metflix.BL.MediatR.CommandHandlers.Movies
 {
-    internal class DeleteMovieCommandHandler : IRequestHandler<DeleteMovieCommand, MovieResponse>
+    public class DeleteMovieCommandHandler : IRequestHandler<DeleteMovieCommand, MovieResponse>
     {
         private readonly IMovieRepository _movieRepository;       
 
-        public DeleteMovieCommandHandler(IMovieRepository movieRepository, IMapper mapper)
+        public DeleteMovieCommandHandler(IMovieRepository movieRepository)
         {
             _movieRepository = movieRepository;            
         }
         public async Task<MovieResponse> Handle(DeleteMovieCommand request, CancellationToken cancellationToken)
         {
-            var isDeleted = await _movieRepository.Delete(request.Id,cancellationToken);
+           var isDeleted =  await _movieRepository.Delete(request.Request.Id, cancellationToken);
 
             if (!isDeleted)
             {

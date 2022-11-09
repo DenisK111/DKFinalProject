@@ -26,7 +26,7 @@ namespace Metflix.BL.MediatR.CommandHandlers.Movies
 
         public async Task<MovieResponse> Handle(AddInventoryCommand request, CancellationToken cancellationToken)
         {
-            var movie = await _movieRepository.GetById(request.Request.MovieId);
+            var movie = await _movieRepository.GetById(request.Request.MovieId, cancellationToken);
 
             if (movie == null)
             {

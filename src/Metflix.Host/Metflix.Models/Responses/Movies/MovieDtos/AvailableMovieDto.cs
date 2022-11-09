@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Metflix.Models.Responses.Movies.MovieDtos
 {
-    public class AvailableMovieDto
+    public record AvailableMovieDto
     {
         public int Id { get; init; }
         public string Name { get; init; } = null!;

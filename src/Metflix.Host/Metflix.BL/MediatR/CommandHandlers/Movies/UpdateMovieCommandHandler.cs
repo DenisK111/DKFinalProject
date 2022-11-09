@@ -28,7 +28,7 @@ namespace Metflix.BL.MediatR.CommandHandlers.Movies
 
         public async Task<MovieResponse> Handle(UpdateMovieCommand request, CancellationToken cancellationToken)
         {
-            var movieToUpdate = await _movieRepository.GetById(request.Request.Id,cancellationToken);
+            var movieToUpdate = await _movieRepository.GetById(request.Request.Id, cancellationToken);
 
             if (movieToUpdate == null)
             {
@@ -41,16 +41,6 @@ namespace Metflix.BL.MediatR.CommandHandlers.Movies
 
             var updatedMovie = _mapper.Map<Movie>(request.Request);
             var updatedModel = await _movieRepository.Update(updatedMovie, cancellationToken);
-
-            if (updatedModel == null)
-            {
-                return new MovieResponse()
-                {
-                    HttpStatusCode = System.Net.HttpStatusCode.BadRequest,
-                    Message = ResponseMessages.InvalidData
-                };
-            }
-
             var updatedModelDto = _mapper.Map<MovieDto>(updatedModel);
 
             return new MovieResponse()

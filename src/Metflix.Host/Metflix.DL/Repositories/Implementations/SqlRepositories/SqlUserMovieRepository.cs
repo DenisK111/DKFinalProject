@@ -119,7 +119,7 @@ namespace Metflix.DL.Repositories.Implementations.SqlRepositories
 
         public async Task<IEnumerable<UserMovie>> GetAllOverDue(CancellationToken cancellationToken = default)
         {
-            var query = @"SELECT * FROM UserMovies
+            var query = @"SELECT * FROM UserMovies WITH (NOLOCK)
                           WHERE GETDATE() > DueDate AND IsReturned = 0
                           Order By DueDate";
 
@@ -164,7 +164,8 @@ namespace Metflix.DL.Repositories.Implementations.SqlRepositories
         public async Task<bool> MarkAsReturned(int id, CancellationToken cancellationToken = default)
         {
             var query = @"Update UserMovies
-                          SET IsReturned=1
+                          SET IsReturned = 1,
+                              LastChanged = GetDate()
                           WHERE Id = @Id";
 
             try
@@ -189,7 +190,7 @@ namespace Metflix.DL.Repositories.Implementations.SqlRepositories
             var query = @"UPDATE UserMovies
                         SET UserId = @UserId, MovieId = @MovieId, LastChanged = GetDate(), DueDate = @DueDate, IsReturned = @IsReturned, DaysFor = @DaysFor
                         WHERE Id = @Id
-                        SELECT * FROM UserMovies
+                        SELECT * FROM UserMovies WITH (NOLOCK)
                         WHERE Id = @Id";
 
             try

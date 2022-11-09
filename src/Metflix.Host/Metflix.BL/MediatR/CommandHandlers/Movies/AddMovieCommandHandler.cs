@@ -30,16 +30,6 @@ namespace Metflix.BL.MediatR.CommandHandlers.Movies
         {
             var movieToAdd = _mapper.Map<Movie>(request.Request);
             var addedModel = await _movieRepository.Add(movieToAdd, cancellationToken);
-
-            if (addedModel == null)
-            {
-                return new MovieResponse()
-                {
-                    HttpStatusCode = System.Net.HttpStatusCode.BadRequest,
-                    Message = ResponseMessages.InvalidData
-                };
-            }
-
             var addedModelDto = _mapper.Map<MovieDto>(addedModel);
 
             return new MovieResponse()

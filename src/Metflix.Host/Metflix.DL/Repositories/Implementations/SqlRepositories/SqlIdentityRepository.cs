@@ -29,7 +29,7 @@ namespace Metflix.DL.Repositories.Implementations.SqlRepositories
         }
         public async Task<bool> CheckIfUserExists(string email, CancellationToken cancellationToken = default)
         {
-            var query = @"SELECT COUNT(*) FROM USERS
+            var query = @"SELECT COUNT(*) FROM USERS WITH (NOLOCK)
                             WHERE Email = @Email"
             ;
 
@@ -77,7 +77,7 @@ namespace Metflix.DL.Repositories.Implementations.SqlRepositories
 
         public async Task<UserInfo> GetById(string id, CancellationToken cancellationToken = default)
         {
-            var query = @"SELECT * FROM USERS
+            var query = @"SELECT * FROM USERS WITH (NOLOCK)
                             WHERE Id = @Id";
 
             try
@@ -95,10 +95,10 @@ namespace Metflix.DL.Repositories.Implementations.SqlRepositories
             }            
         }
 
-        public async Task<UserInfo?> GetUserByEmail(string email, CancellationToken cancellationToken = default)
+        public async Task<UserInfo> GetUserByEmail(string email, CancellationToken cancellationToken = default)
         {
-            var query = @"SELECT * FROM USERS
-                            WHERE Email = @Email";
+            var query = @"SELECT * FROM USERS WITH (NOLOCK)
+                          WHERE Email = @Email";
 
             try
             {

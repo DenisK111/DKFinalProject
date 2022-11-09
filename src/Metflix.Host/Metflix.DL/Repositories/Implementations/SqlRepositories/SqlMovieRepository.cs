@@ -31,7 +31,7 @@ namespace Metflix.DL.Repositories.Implementations.SqlRepositories
             _logger = logger;
             _configuration = configuration;
         }
-        public async Task<Movie?> Add(Movie model, CancellationToken cancellationToken = default)
+        public async Task<Movie> Add(Movie model, CancellationToken cancellationToken = default)
         {
             var query = @"INSERT INTO Movies ([Name],TotalQuantity,AvailableQuantity,PricePerDay,LastChanged,Year)
                             VALUES (@Name,@TotalQuantity,@TotalQuantity,@PricePerDay,GetDate(),@Year)
@@ -63,8 +63,8 @@ namespace Metflix.DL.Repositories.Implementations.SqlRepositories
                 await using (var conn = new SqlConnection(_configuration.CurrentValue.SqlConnection))
                 {
                     await conn.OpenAsync(cancellationToken);
-                    await conn.ExecuteAsync(query, new { Id = modelId });
-                    return true;
+                    var result = await conn.ExecuteAsync(query, new { Id = modelId });
+                    return result == 1;
                 }
             }
 
@@ -144,7 +144,8 @@ namespace Metflix.DL.Repositories.Implementations.SqlRepositories
         public async Task IncreaseAvailableQuantity(int movieId, int amount = 1, CancellationToken cancellationToken = default)
         {
             var query = @"UPDATE Movies
-                          SET AvailableQuantity = AvailableQuantity + @Amount
+                          SET AvailableQuantity = AvailableQuantity + @Amount,
+                              LastChanged = GetDate()
                           WHERE Id = @Id";
 
             try
@@ -165,7 +166,8 @@ namespace Metflix.DL.Repositories.Implementations.SqlRepositories
         public async Task DecreaseAvailableQuantity(int movieId, int amount = 1, CancellationToken cancellationToken = default)
         {
             var query = @"UPDATE Movies
-                          SET AvailableQuantity = AvailableQuantity - @Amount
+                          SET AvailableQuantity = AvailableQuantity - @Amount,
+                              LastChanged = GetDate()
                           WHERE Id = @Id";
 
             try
@@ -183,12 +185,17 @@ namespace Metflix.DL.Repositories.Implementations.SqlRepositories
             }
         }
 
-        public async Task<Movie?> Update(Movie model, CancellationToken cancellationToken = default)
+        public async Task<Movie> Update(Movie model, CancellationToken cancellationToken = default)
         {
             var query = @"UPDATE Movies
-                        SET [Name] = @Name, TotalQuantity = @TotalQuantity, AvailableQuantity = @AvailableQuantity, PricePerDay = @PricePerDay, LastChanged = GetDate(),Year = @Year
+                        SET [Name] = @Name,
+                            TotalQuantity = @TotalQuantity,
+                            AvailableQuantity = @AvailableQuantity,
+                            PricePerDay = @PricePerDay,
+                            LastChanged = GetDate(),
+                            Year = @Year
                         WHERE Id = @Id
-                        SELECT * FROM Movies
+                        SELECT * FROM Movies WITH (NOLOCK)
                         WHERE Id = @Id";
 
             try
@@ -196,8 +203,7 @@ namespace Metflix.DL.Repositories.Implementations.SqlRepositories
                 await using (var conn = new SqlConnection(_configuration.CurrentValue.SqlConnection))
                 {
                     await conn.OpenAsync(cancellationToken);
-                    var result = await conn.QuerySingleAsync<Movie>(query, model);
-                    return result;
+                    return await conn.QuerySingleAsync<Movie>(query, model);                    
                 }
             }
             catch (Exception e)
@@ -210,9 +216,11 @@ namespace Metflix.DL.Repositories.Implementations.SqlRepositories
         public async Task<Movie> AdjustInventory(int movieId, int amount, CancellationToken cancellationToken = default)
         {
             var query = @"UPDATE Movies
-                        SET AvailableQuantity = AvailableQuantity + @Amount, TotalQuantity = TotalQuantity + @Amount
+                        SET AvailableQuantity = AvailableQuantity + @Amount,
+                        TotalQuantity = TotalQuantity + @Amount,
+                        LastChanged = GetDate()
                         WHERE ID = @Id
-                        SELECT * FROM Movies
+                        SELECT * FROM Movies WITH (NOLOCK)
                         WHERE Id = @Id";
 
             try
@@ -232,8 +240,9 @@ namespace Metflix.DL.Repositories.Implementations.SqlRepositories
 
         public async Task<int> GetCurrentQuantity(int movieId, CancellationToken cancellationToken = default)
         {
-            var query = @"SELECT AvailableQuantity
-                          FROM MOVIES WHERE Id = @Id";
+            var query = @"SELECT AvailableQuantity 
+                          FROM MOVIES WITH (NOLOCK)
+                          WHERE Id = @Id";
 
             try
             {
@@ -253,7 +262,9 @@ namespace Metflix.DL.Repositories.Implementations.SqlRepositories
         public async Task<int> GetTotalQuantity(int movieId, CancellationToken cancellationToken = default)
         {
             var query = @"SELECT TotalQuantity
-                          FROM MOVIES WHERE Id = @Id";
+                          FROM MOVIES 
+                          WITH (NOLOCK)
+                          WHERE Id = @Id";
 
             try
             {

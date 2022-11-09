@@ -26,7 +26,7 @@ namespace Metflix.BL.MediatR.QueryHandlers.Movies
         }
         public async Task<MovieResponse> Handle(GetMovieByIdQuery request, CancellationToken cancellationToken)
         {
-            var responseModel = await _movieRepository.GetById(request.id,cancellationToken);
+            var responseModel = await _movieRepository.GetById(request.Request.Id,cancellationToken);
 
             if (responseModel == null)
             {

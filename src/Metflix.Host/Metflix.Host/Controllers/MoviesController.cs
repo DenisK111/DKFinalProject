@@ -39,16 +39,14 @@ namespace Metflix.Host.Controllers
         [HttpGet(nameof(GetById))]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> GetById(int id, CancellationToken token)
+        public async Task<IActionResult> GetById([FromQuery] ByIntIdRequest request, CancellationToken token)
         {
-            var result = await _mediator.Send(new GetMovieByIdQuery(id), token);
+            var result = await _mediator.Send(new GetMovieByIdQuery(request), token);
             return this.ProduceResponse(result);
         }
-
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        
         [ProducesResponseType(StatusCodes.Status201Created)]
         [HttpPost]
-
         public async Task<IActionResult> Add([FromBody] AddMovieRequest movie, CancellationToken token)
         {
             var result = await _mediator.Send(new AddMovieCommand(movie), token);
@@ -67,9 +65,9 @@ namespace Metflix.Host.Controllers
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [HttpDelete]
-        public async Task<IActionResult> Delete(int id, CancellationToken token)
+        public async Task<IActionResult> Delete([FromQuery]ByIntIdRequest request, CancellationToken token)
         {
-            var result = await _mediator.Send(new DeleteMovieCommand(id), token);
+            var result = await _mediator.Send(new DeleteMovieCommand(request), token);
             return this.ProduceResponse(result);
         }
         [HttpPut(nameof(AddInventory))]
