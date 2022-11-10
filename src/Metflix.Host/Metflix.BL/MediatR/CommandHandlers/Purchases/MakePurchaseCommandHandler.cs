@@ -8,7 +8,8 @@ using AutoMapper;
 using MediatR;
 using MessagePack;
 using Metflix.DL.Repositories.Contracts;
-using Metflix.Kafka.Producers;
+using Metflix.Kafka.Contracts;
+using Metflix.Models.Common;
 using Metflix.Models.Configurations.KafkaSettings.Producers;
 using Metflix.Models.DbModels;
 using Metflix.Models.KafkaModels;
@@ -23,11 +24,11 @@ namespace Metflix.BL.MediatR.CommandHandlers.Purchases
     {
         private readonly IMapper _mapper;
         private readonly IMovieRepository _movieRepository;
-        private readonly GenericProducer<string, PurchaseUserInputData, KafkaUserPurchaseInputProducerSettings> _producer;
+        private readonly IGenericProducer<string, PurchaseUserInputData, KafkaUserPurchaseInputProducerSettings> _producer;
         private readonly ITempPurchaseDataRepository _tempPurchaseRepository;
 
 
-        public MakePurchaseCommandHandler(IMapper mapper, IMovieRepository movieRepository, GenericProducer<string, PurchaseUserInputData, KafkaUserPurchaseInputProducerSettings> producer, ITempPurchaseDataRepository tempPurchaseRepository)
+        public MakePurchaseCommandHandler(IMapper mapper, IMovieRepository movieRepository, IGenericProducer<string, PurchaseUserInputData, KafkaUserPurchaseInputProducerSettings> producer, ITempPurchaseDataRepository tempPurchaseRepository)
         {
             _mapper = mapper;
             _movieRepository = movieRepository;
@@ -93,7 +94,7 @@ namespace Metflix.BL.MediatR.CommandHandlers.Purchases
 
             await _tempPurchaseRepository.SetOrUpdateEntryAsync(request.UserId, Array.Empty<byte>());
 
-            await _producer.ProduceAsync(kafkaMessageValue.GetKey(), kafkaMessageValue);
+            await _producer.ProduceAsync(kafkaMessageValue.GetKey(), kafkaMessageValue,cancellationToken);
 
             var returnedValue = await _tempPurchaseRepository.GetValueAsync(key);
 
@@ -121,7 +122,7 @@ namespace Metflix.BL.MediatR.CommandHandlers.Purchases
                 purchaseResponse = new PurchaseResponse()
                 {
                     HttpStatusCode = HttpStatusCode.InternalServerError,
-                    Message = "Something went wrong."
+                    Message = ResponseMessages.InternalServerErrorMessage,
                 };
             }
 

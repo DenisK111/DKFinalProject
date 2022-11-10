@@ -16,6 +16,7 @@ using Utils;
 using System.Net;
 using Metflix.Host.Extensions;
 using Metflix.Host.Common;
+using Metflix.Models.Common;
 
 namespace Metflix.Host.Controllers
 {

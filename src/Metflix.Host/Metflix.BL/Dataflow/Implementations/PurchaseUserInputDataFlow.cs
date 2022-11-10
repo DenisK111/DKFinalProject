@@ -7,7 +7,7 @@ using System.Threading.Tasks.Dataflow;
 using AutoMapper;
 using Metflix.BL.Dataflow.Contracts;
 using Metflix.DL.Repositories.Contracts;
-using Metflix.Kafka.Producers;
+using Metflix.Kafka.Contracts;
 using Metflix.Models.Configurations.KafkaSettings.Producers;
 using Metflix.Models.KafkaModels;
 
@@ -18,9 +18,9 @@ namespace Metflix.BL.Dataflow.Implementations
         private readonly IMovieRepository _movieRepository;
         private readonly TransformBlock<PurchaseUserInputData, PurchaseInfoData> _getPurchaseInfoBlock;
         private readonly IMapper _mapper;
-        private readonly GenericProducer<string, PurchaseInfoData, KafkaPurchaseDataProducerSettings> _producer;
+        private readonly IGenericProducer<string, PurchaseInfoData, KafkaPurchaseDataProducerSettings> _producer;
 
-        public PurchaseUserInputDataFlow(IMovieRepository movieRepository, IMapper mapper, GenericProducer<string, PurchaseInfoData, KafkaPurchaseDataProducerSettings> producer)
+        public PurchaseUserInputDataFlow(IMovieRepository movieRepository, IMapper mapper, IGenericProducer<string, PurchaseInfoData, KafkaPurchaseDataProducerSettings> producer)
         {
             _movieRepository = movieRepository;
             _mapper = mapper;

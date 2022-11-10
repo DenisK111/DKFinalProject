@@ -11,7 +11,7 @@ using Microsoft.Extensions.Options;
 
 namespace Metflix.Kafka.Producers
 {
-    public class GenericProducer<TKey, TValue, TSettings> : IDisposable
+    public class GenericProducer<TKey, TValue, TSettings> : IGenericProducer<TKey, TValue,TSettings>
        where TSettings : KafkaProducerSettings
        where TValue : class, IKafkaItem<TKey>
        where TKey : notnull
@@ -35,7 +35,7 @@ namespace Metflix.Kafka.Producers
             _producer.Dispose();
         }
 
-        public async Task ProduceAsync(TKey key, TValue value)
+        public async Task ProduceAsync(TKey key, TValue value, CancellationToken cancellationToken = default)
         {
             var msg = new Message<TKey, TValue>()
             {
@@ -43,7 +43,7 @@ namespace Metflix.Kafka.Producers
                 Value = value,
             };
 
-            await _producer.ProduceAsync(_producerSettings.CurrentValue.Topic, msg);
+            await _producer.ProduceAsync(_producerSettings.CurrentValue.Topic, msg, cancellationToken);
         }
 
     }

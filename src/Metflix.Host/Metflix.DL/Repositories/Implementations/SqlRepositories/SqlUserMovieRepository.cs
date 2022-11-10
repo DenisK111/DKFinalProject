@@ -9,6 +9,7 @@ using Dapper;
 using Metflix.DL.Repositories.Contracts;
 using Metflix.Models.DbModels;
 using Metflix.Models.DbModels.Configurations;
+using Metflix.Models.DbModels.DbDtos;
 using Metflix.Models.Responses.Purchases.PurchaseDtos;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -96,7 +97,7 @@ namespace Metflix.DL.Repositories.Implementations.SqlRepositories
             }
         }
 
-        public async Task<IEnumerable<UserMovieDto>> GetAllUnreturnedByUserId(string userId, CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<UserMovieDbDto>> GetAllUnreturnedByUserId(string userId, CancellationToken cancellationToken = default)
         {
             var query = @"SELECT m.Name,um.Id,um.DueDate FROM UserMovies as um
                             JOIN Movies as m ON m.Id = um.MOVIEID
@@ -107,7 +108,7 @@ namespace Metflix.DL.Repositories.Implementations.SqlRepositories
                 await using (var conn = new SqlConnection(_configuration.CurrentValue.SqlConnection))
                 {
                     await conn.OpenAsync(cancellationToken);
-                    return await conn.QueryAsync<UserMovieDto>(query, new { UserId = userId });
+                    return await conn.QueryAsync<UserMovieDbDto>(query, new { UserId = userId });
                 }
             }
             catch (Exception e)
@@ -161,7 +162,7 @@ namespace Metflix.DL.Repositories.Implementations.SqlRepositories
         }
 
 
-        public async Task<bool> MarkAsReturned(int id, CancellationToken cancellationToken = default)
+        public async Task MarkAsReturned(int id, CancellationToken cancellationToken = default)
         {
             var query = @"Update UserMovies
                           SET IsReturned = 1,
@@ -173,8 +174,7 @@ namespace Metflix.DL.Repositories.Implementations.SqlRepositories
                 await using (var conn = new SqlConnection(_configuration.CurrentValue.SqlConnection))
                 {
                     await conn.OpenAsync(cancellationToken);
-                    await conn.ExecuteAsync(query, new { Id = id });
-                    return true;
+                    await conn.ExecuteAsync(query, new { Id = id });                    
                 }
             }
 

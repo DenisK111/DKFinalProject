@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using MediatR;
 using Metflix.BL.Services.Contracts;
 using Metflix.DL.Repositories.Contracts;
+using Metflix.Models.Common;
 using Metflix.Models.Mediatr.Commands.Movies;
 using Metflix.Models.Responses.Movies;
 using Utils;

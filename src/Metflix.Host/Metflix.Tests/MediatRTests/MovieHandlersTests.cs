@@ -5,6 +5,7 @@ using Metflix.BL.MediatR.QueryHandlers.Movies;
 using Metflix.BL.Services.Contracts;
 using Metflix.DL.Repositories.Contracts;
 using Metflix.Host.AutoMapper;
+using Metflix.Models.Common;
 using Metflix.Models.DbModels;
 using Metflix.Models.Mediatr.Commands.Movies;
 using Metflix.Models.Mediatr.Queries.Movies;
@@ -72,7 +73,7 @@ namespace Metflix.Tests.MediatRTests
         public async Task AddInventory_ExistingMovie_SuccessfulPath()
         {
             //Arange
-            var response = GenerateMovieResponse(HttpStatusCode.OK, null!, _testMovie);
+            var response = GenerateResponse<MovieResponse,Movie,MovieDto>(HttpStatusCode.OK, null!, _testMovie);
 
             var request = new AddInventoryRequest()
             {
@@ -98,7 +99,7 @@ namespace Metflix.Tests.MediatRTests
         public async Task AddInventory_InvalidMovieId_NotFoundPath()
         {
             //Arange
-            var response = GenerateMovieResponse(HttpStatusCode.NotFound, ResponseMessages.IdNotFound, default(Movie)!);
+            var response = GenerateResponse<MovieResponse, Movie, MovieDto>(HttpStatusCode.NotFound, ResponseMessages.IdNotFound, default(Movie)!);
 
             var request = new AddInventoryRequest()
             {
@@ -123,7 +124,7 @@ namespace Metflix.Tests.MediatRTests
         public async Task RemoveInventory_ExistingMovie_SuccessfulPath()
         {
             //Arange
-            var response = GenerateMovieResponse(HttpStatusCode.OK, null!, _testMovie);
+            var response = GenerateResponse<MovieResponse, Movie, MovieDto>(HttpStatusCode.OK, null!, _testMovie);
 
             var request = new RemoveInventoryRequest()
             {
@@ -149,7 +150,7 @@ namespace Metflix.Tests.MediatRTests
         public async Task RemoveInventory_InvalidMovieId_NotFoundPath()
         {
             //Arange            
-            var response = GenerateMovieResponse(HttpStatusCode.NotFound, ResponseMessages.IdNotFound, default(Movie)!);
+            var response = GenerateResponse<MovieResponse, Movie, MovieDto>(HttpStatusCode.NotFound, ResponseMessages.IdNotFound, default(Movie)!);
 
             var request = new RemoveInventoryRequest()
             {
@@ -175,7 +176,7 @@ namespace Metflix.Tests.MediatRTests
         public async Task AddMovie_SuccessfulPath()
         {
             //Arange
-            var response = GenerateMovieResponse(HttpStatusCode.Created, null!, _testMovie);
+            var response = GenerateResponse<MovieResponse, Movie, MovieDto>(HttpStatusCode.Created, null!, _testMovie);
 
             var request = new AddMovieRequest()
             {
@@ -203,7 +204,7 @@ namespace Metflix.Tests.MediatRTests
         {
             //Arange
 
-            var response = GenerateMovieResponse(HttpStatusCode.NoContent, null!, default(Movie)!);
+            var response = GenerateResponse<MovieResponse, Movie, MovieDto>(HttpStatusCode.NoContent, null!, default(Movie)!);
 
             var request = new ByIntIdRequest()
             {
@@ -228,7 +229,7 @@ namespace Metflix.Tests.MediatRTests
         {
             //Arange
 
-            var response = GenerateMovieResponse(HttpStatusCode.NotFound, ResponseMessages.IdNotFound, default(Movie)!);
+            var response = GenerateResponse<MovieResponse, Movie, MovieDto>(HttpStatusCode.NotFound, ResponseMessages.IdNotFound, default(Movie)!);
 
             var request = new ByIntIdRequest()
             {
@@ -253,7 +254,7 @@ namespace Metflix.Tests.MediatRTests
         {
             //Arange
 
-            var response = GenerateMovieResponse(HttpStatusCode.OK, null!, _testMovie);
+            var response = GenerateResponse<MovieResponse, Movie, MovieDto>(HttpStatusCode.OK, null!, _testMovie);
 
             var request = new UpdateMovieRequest()
             {
@@ -283,7 +284,7 @@ namespace Metflix.Tests.MediatRTests
         public async Task UpdateMovie_InvalidMovie_NotFoundPath()
         {
             //Arange
-            var response = GenerateMovieResponse(HttpStatusCode.NotFound, ResponseMessages.IdNotFound, default(Movie)!);
+            var response = GenerateResponse<MovieResponse, Movie, MovieDto>(HttpStatusCode.NotFound, ResponseMessages.IdNotFound, default(Movie)!);
 
             var request = new UpdateMovieRequest()
             {
@@ -313,11 +314,8 @@ namespace Metflix.Tests.MediatRTests
         public async Task GetAllMovies_SuccessfulPath()
         {
             //Arange
-            var response = new MovieCollectionResponse()
-            {
-                Model = _mapper.Map<IEnumerable<MovieDto>>(_testMovies),
-                HttpStatusCode = HttpStatusCode.OK,
-            };          
+
+            var response = GenerateResponse<MovieCollectionResponse, IEnumerable<Movie>, IEnumerable<MovieDto>>(HttpStatusCode.OK, null!, _testMovies);               
 
             var query = new GetAllMoviesQuery();
 
@@ -336,12 +334,9 @@ namespace Metflix.Tests.MediatRTests
         public async Task GetAvailableMovies_SuccessfulPath()
         {
             //Arange
-            var response = new AvailableMoviesResponse()
-            {
-                Model = _mapper.Map<IEnumerable<AvailableMovieDto>>(_testMovies),
-                HttpStatusCode = HttpStatusCode.OK,
-            };
 
+            var response = GenerateResponse<AvailableMoviesResponse, IEnumerable<Movie>, IEnumerable<AvailableMovieDto>>(HttpStatusCode.OK, null!, _testMovies);
+           
             var query = new GetAvailableMoviesQuery();
 
             _movieRepositoryMock.Setup(x => x.GetAllAvailableMovies(It.IsAny<CancellationToken>())).ReturnsAsync(_testMovies);
@@ -360,7 +355,7 @@ namespace Metflix.Tests.MediatRTests
         {
             //Arange
 
-            var response = GenerateMovieResponse(HttpStatusCode.OK, null!, _testMovie);
+            var response = GenerateResponse<MovieResponse, Movie, MovieDto>(HttpStatusCode.OK, null!, _testMovie);
 
             var request = new ByIntIdRequest()
             {
@@ -383,8 +378,8 @@ namespace Metflix.Tests.MediatRTests
         public async Task GetMovieById_InvalidMovie_NotFoundPath()
         {
             //Arange
-
-            var response = GenerateMovieResponse(HttpStatusCode.NotFound, ResponseMessages.IdNotFound, default(Movie)!);
+            
+            var response = GenerateResponse<MovieResponse, Movie, MovieDto>(HttpStatusCode.NotFound, ResponseMessages.IdNotFound, default(Movie)!);
 
             var request = new ByIntIdRequest()
             {
@@ -402,17 +397,6 @@ namespace Metflix.Tests.MediatRTests
             //Assert
             AssertStatusCode404WithEmptyModelResponseEquality(response, handlerResponse);
         }
-
-        private MovieResponse GenerateMovieResponse(HttpStatusCode statusCode, string message, Movie movie)
-        {
-            var model = movie == default(Movie) ? null : _mapper.Map<MovieDto>(movie);
-
-            return new MovieResponse()
-            {
-                HttpStatusCode = statusCode,
-                Message = message,
-                Model = model
-            };
-        }
+       
     }
 }

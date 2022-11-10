@@ -7,7 +7,8 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Metflix.BL.Services.Contracts;
 using Metflix.DL.Repositories.Contracts;
-using Metflix.Kafka.Producers;
+using Metflix.Kafka.Contracts;
+using Metflix.Models.Common;
 using Metflix.Models.Configurations.KafkaSettings.Producers;
 using Metflix.Models.KafkaModels;
 using Metflix.Models.Responses.Movies;
@@ -21,9 +22,9 @@ namespace Metflix.BL.Services.Implementations
         private readonly IMovieRepository _movieRepository;
         private readonly IMapper _mapper;
         private readonly IIdentityRepository _userRepository;
-        private readonly GenericProducer<Guid, InventoryChangeData, KafkaInventoryChangesProducerSettings> _kafkaProducer;
+        private readonly IGenericProducer<Guid, InventoryChangeData, KafkaInventoryChangesProducerSettings> _kafkaProducer;
 
-        public InventoryService(IMovieRepository movieRepository, IMapper mapper, IIdentityRepository userRepository, GenericProducer<Guid, InventoryChangeData, KafkaInventoryChangesProducerSettings> kafkaProducer)
+        public InventoryService(IMovieRepository movieRepository, IMapper mapper, IIdentityRepository userRepository, IGenericProducer<Guid, InventoryChangeData, KafkaInventoryChangesProducerSettings> kafkaProducer)
         {
             _movieRepository = movieRepository;
             _mapper = mapper;
@@ -74,7 +75,7 @@ namespace Metflix.BL.Services.Implementations
                 LastChanged = DateTime.UtcNow
             };
 
-            await _kafkaProducer.ProduceAsync(inventoryChangeData.GetKey(), inventoryChangeData);
+            await _kafkaProducer.ProduceAsync(inventoryChangeData.GetKey(), inventoryChangeData,cancellationToken);
 
             return new MovieResponse()
             {

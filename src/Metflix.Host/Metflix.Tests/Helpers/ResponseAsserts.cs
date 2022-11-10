@@ -8,7 +8,7 @@ using Metflix.Models.Responses;
 
 namespace Metflix.Tests.Helpers
 {
-    public static class Asserts
+    public static class ResponseAsserts
     {
         public static void AssertStatusCode204WithEmptyModelAndMessageResponseEquality<T>(BaseResponse<T> expected, BaseResponse<T> actual)
         {
@@ -26,6 +26,18 @@ namespace Metflix.Tests.Helpers
         public static void AssertStatusCode200Or201WithEmptyMessageResponseEquality<T>(BaseResponse<T> expected, BaseResponse<T> actual)
         {
             Assert.Null(actual.Message);
+            AssertResponseEquality(expected, actual);
+        }
+
+        public static void AssertStatusCode400WithEmptyModelResponseEquality<T>(BaseResponse<T> expected, BaseResponse<T> actual)
+        {
+            Assert.Null(actual.Model);
+            AssertResponseEquality(expected, actual);
+        }
+
+        public static void AssertStatusCode500WithEmptyModelResponseEquality<T>(BaseResponse<T> expected, BaseResponse<T> actual)
+        {
+            Assert.Null(actual.Model);
             AssertResponseEquality(expected, actual);
         }
 

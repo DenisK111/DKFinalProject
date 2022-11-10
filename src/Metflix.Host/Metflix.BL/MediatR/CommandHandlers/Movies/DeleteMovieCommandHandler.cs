@@ -5,6 +5,7 @@ using System.Text;
 using AutoMapper;
 using MediatR;
 using Metflix.DL.Repositories.Contracts;
+using Metflix.Models.Common;
 using Metflix.Models.Mediatr.Commands.Movies;
 using Metflix.Models.Responses.Movies;
 using Utils;

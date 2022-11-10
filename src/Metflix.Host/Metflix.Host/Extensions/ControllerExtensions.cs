@@ -15,7 +15,7 @@ namespace Metflix.Host.Extensions
                 case HttpStatusCode.OK:
                     return controller.Ok(response.Model);
                 case HttpStatusCode.NotFound:
-                    return controller.NotFound(response.Message);
+                    return controller.NotFound(new ErrorResponse() { Error = response.Message });
                 case HttpStatusCode.BadRequest:
                     return controller.BadRequest(new ErrorResponse() { Error = response.Message });
                 case HttpStatusCode.Conflict:
@@ -30,7 +30,7 @@ namespace Metflix.Host.Extensions
 
         public static string GetUserId(this ControllerBase controller)
         {
-            return controller.User.FindFirst(JwtClaims.Id)?.Value!;
+            return controller.User?.FindFirst(JwtClaims.Id)?.Value!;
         }
     }
 }

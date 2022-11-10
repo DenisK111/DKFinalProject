@@ -53,8 +53,7 @@ namespace Metflix.Host.Controllers
             return this.ProduceResponse(result, nameof(GetById), new { Id = result.Model?.Id });
         }
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]        
         [HttpPut]
         public async Task<IActionResult> Update([FromBody] UpdateMovieRequest movie, CancellationToken token)
         {

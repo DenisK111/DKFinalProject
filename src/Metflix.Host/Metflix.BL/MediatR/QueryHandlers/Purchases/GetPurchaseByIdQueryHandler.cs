@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using MediatR;
 using Metflix.DL.Repositories.Contracts;
+using Metflix.Models.Common;
 using Metflix.Models.Mediatr.Queries.Purchases;
 using Metflix.Models.Responses.Purchases;
 using Metflix.Models.Responses.Purchases.PurchaseDtos;
@@ -19,10 +20,10 @@ namespace Metflix.BL.MediatR.QueryHandlers.Purchases
         private readonly IMapper _mapper;
         private readonly IPurchaseRepository _purchaseRepository;
 
-        public GetPurchaseByIdQueryHandler(IMapper mapper, IPurchaseRepository purchaseRepository)
+        public GetPurchaseByIdQueryHandler(IPurchaseRepository purchaseRepository, IMapper mapper)
         {
-            _mapper = mapper;
             _purchaseRepository = purchaseRepository;
+            _mapper = mapper;
         }
 
         public async Task<PurchaseResponse> Handle(GetPurchaseByIdQuery request, CancellationToken cancellationToken)

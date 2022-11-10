@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using MediatR;
 using Metflix.DL.Repositories.Contracts;
+using Metflix.Models.Common;
 using Metflix.Models.Mediatr.Queries.Movies;
 using Metflix.Models.Responses.Movies;
 using Metflix.Models.Responses.Movies.MovieDtos;

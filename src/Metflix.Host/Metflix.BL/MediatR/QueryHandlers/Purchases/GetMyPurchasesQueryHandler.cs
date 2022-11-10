@@ -13,7 +13,7 @@ using Metflix.Models.Responses.Purchases.PurchaseDtos;
 
 namespace Metflix.BL.MediatR.QueryHandlers.Purchases
 {
-    internal class GetMyPurchasesQueryHandler : IRequestHandler<GetMyPurchasesQuery, PurchaseCollectionResponse>
+    public class GetMyPurchasesQueryHandler : IRequestHandler<GetMyPurchasesQuery, PurchaseCollectionResponse>
     {
         private readonly IPurchaseRepository _purchaseRepo;
         private readonly IMapper _mapper;
@@ -26,7 +26,7 @@ namespace Metflix.BL.MediatR.QueryHandlers.Purchases
 
         public async Task<PurchaseCollectionResponse> Handle(GetMyPurchasesQuery request, CancellationToken cancellationToken)
         {
-            var purchases = await _purchaseRepo.GetAllByUserId(request.UserId);
+            var purchases = await _purchaseRepo.GetAllByUserId(request.UserId,cancellationToken);
             var purchaseDtos = _mapper.Map<IEnumerable<PurchaseDto>>(purchases);
 
             return new PurchaseCollectionResponse()

@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Metflix.Models.Common;
+using Newtonsoft.Json;
 using System.Data.SqlClient;
 using System.Net;
 using Utils;

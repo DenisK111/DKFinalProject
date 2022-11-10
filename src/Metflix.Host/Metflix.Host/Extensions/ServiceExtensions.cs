@@ -7,6 +7,7 @@ using Metflix.DL.Repositories.Implementations.MongoRepositories;
 using Metflix.DL.Repositories.Implementations.RedisRepositories;
 using Metflix.DL.Repositories.Implementations.SqlRepositories;
 using Metflix.Host.HostedServices;
+using Metflix.Kafka.Contracts;
 using Metflix.Kafka.Producers;
 using Metflix.Models.Configurations.KafkaSettings.Producers;
 using Metflix.Models.DbModels.Configurations;
@@ -41,9 +42,9 @@ namespace Metflix.Host.Extensions
         public static IServiceCollection RegisterKafkaProducers(this IServiceCollection services)
         {
             services
-                .AddSingleton<GenericProducer<string, PurchaseUserInputData, KafkaUserPurchaseInputProducerSettings>>()
-                .AddSingleton<GenericProducer<Guid, InventoryChangeData, KafkaInventoryChangesProducerSettings>>()
-                .AddSingleton<GenericProducer<string, PurchaseInfoData, KafkaPurchaseDataProducerSettings>>();
+                .AddSingleton<IGenericProducer<string, PurchaseUserInputData, KafkaUserPurchaseInputProducerSettings>,GenericProducer<string, PurchaseUserInputData, KafkaUserPurchaseInputProducerSettings>>()
+                .AddSingleton< IGenericProducer < Guid, InventoryChangeData, KafkaInventoryChangesProducerSettings > ,GenericProducer <Guid, InventoryChangeData, KafkaInventoryChangesProducerSettings>>()
+                .AddSingleton< IGenericProducer<string, PurchaseInfoData, KafkaPurchaseDataProducerSettings>,GenericProducer<string, PurchaseInfoData, KafkaPurchaseDataProducerSettings>>();
 
             return services;
         }

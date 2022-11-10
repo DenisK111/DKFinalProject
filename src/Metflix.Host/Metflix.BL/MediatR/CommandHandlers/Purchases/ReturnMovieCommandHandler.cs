@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using MediatR;
 using Metflix.DL.Repositories.Contracts;
+using Metflix.Models.Common;
 using Metflix.Models.Mediatr.Commands.Purchases;
 using Metflix.Models.Responses.Movies.MovieDtos;
 using Metflix.Models.Responses.Purchases;
@@ -48,10 +49,8 @@ namespace Metflix.BL.MediatR.CommandHandlers.Purchases
                 };
             }
 
-            if (await _userMovieRepository.MarkAsReturned(request.request.MovieId, cancellationToken))
-            {
-                await _movierepository.IncreaseAvailableQuantity(userMovie.MovieId, cancellationToken:cancellationToken);
-            } 
+            await _userMovieRepository.MarkAsReturned(request.request.MovieId, cancellationToken);           
+            await _movierepository.IncreaseAvailableQuantity(userMovie.MovieId, cancellationToken:cancellationToken);           
 
             var movie = await _movierepository.GetById(request.request.MovieId, cancellationToken);
 
