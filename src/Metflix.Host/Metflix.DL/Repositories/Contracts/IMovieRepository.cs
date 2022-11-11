@@ -1,4 +1,5 @@
 ﻿using Metflix.Models.DbModels;
+using Metflix.Models.Responses.Movies;
 
 namespace Metflix.DL.Repositories.Contracts
 {
@@ -10,5 +11,6 @@ namespace Metflix.DL.Repositories.Contracts
         Task<Movie> AdjustInventory(int movieId, int amount, CancellationToken cancellationToken = default);       
         Task<int> GetCurrentQuantity(int movieId, CancellationToken cancellationToken = default);
         Task<int> GetTotalQuantity(int movieId, CancellationToken cancellationToken = default);
+        Task<Movie> IncreaseAvailableQuantityMarkAsReturnedAndGetMovieByIdTransaction(int userMovieId, int movieId, CancellationToken cancellationToken = default);
     }
 }

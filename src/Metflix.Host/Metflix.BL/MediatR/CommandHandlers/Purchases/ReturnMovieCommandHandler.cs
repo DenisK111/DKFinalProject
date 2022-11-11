@@ -43,10 +43,7 @@ namespace Metflix.BL.MediatR.CommandHandlers.Purchases
                 };
             }
 
-            await _userMovieRepository.MarkAsReturned(request.request.UserMovieId, cancellationToken);           
-            await _movierepository.IncreaseAvailableQuantity(userMovie.MovieId, cancellationToken:cancellationToken);           
-
-            var movie = await _movierepository.GetById(request.request.UserMovieId, cancellationToken);
+            var movie = await _movierepository.IncreaseAvailableQuantityMarkAsReturnedAndGetMovieByIdTransaction(request.request.UserMovieId, userMovie.MovieId, cancellationToken);
 
             return new ReturnMovieResponse()
             {

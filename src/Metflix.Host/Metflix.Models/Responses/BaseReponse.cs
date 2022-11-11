@@ -8,6 +8,6 @@ namespace Metflix.Models.Responses
 
         public string Message { get; set; } = null!;
 
-        public T? Model { get; set; } = default(T)!;
+        public T Model { get; set; } = default(T)!;
     }
 }

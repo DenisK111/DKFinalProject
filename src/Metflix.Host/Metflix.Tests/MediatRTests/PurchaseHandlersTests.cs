@@ -343,7 +343,7 @@ namespace Metflix.Tests.MediatRTests
             var command = new ReturnMovieCommand(request, "TestId");
 
             _userMovieRepositoryMock.Setup(x => x.GetById(It.IsAny<int>(), It.IsAny<CancellationToken>())).ReturnsAsync(_testUserMovieNotReturned);
-            _movieRepositoryMock.Setup(x => x.GetById(It.IsAny<int>(), It.IsAny<CancellationToken>())).ReturnsAsync(_testMovie);
+            _movieRepositoryMock.Setup(x => x.IncreaseAvailableQuantityMarkAsReturnedAndGetMovieByIdTransaction(It.IsAny<int>(), It.IsAny<int>(),It.IsAny<CancellationToken>())).ReturnsAsync(_testMovie);
             var handler = new ReturnMovieCommandHandler(_userMovieRepositoryMock.Object, _movieRepositoryMock.Object, _mapper);
 
             //Act

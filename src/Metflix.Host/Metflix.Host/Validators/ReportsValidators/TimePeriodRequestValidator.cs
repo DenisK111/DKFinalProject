@@ -10,6 +10,7 @@ namespace Metflix.Host.Validators.ReportsValidators
         public TimePeriodRequestValidator()
         {            
             RuleFor(c => c.StartDate)
+            .NotEmpty()
             .MustBeValidDateTime<TimePeriodRequest, string>()
             .WithMessage(ValidationMessages.InvalidDateTimeFormat);    
             

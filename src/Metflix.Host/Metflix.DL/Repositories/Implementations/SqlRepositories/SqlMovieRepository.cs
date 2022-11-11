@@ -3,8 +3,10 @@ using Dapper;
 using Metflix.DL.Repositories.Contracts;
 using Metflix.Models.DbModels;
 using Metflix.Models.DbModels.Configurations;
+using Metflix.Models.Responses.Movies;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Utils;
 
 namespace Metflix.DL.Repositories.Implementations.SqlRepositories
 {
@@ -267,6 +269,54 @@ namespace Metflix.DL.Repositories.Implementations.SqlRepositories
                 e.Source = $"Error in {nameof(SqlMovieRepository)}.{nameof(GetTotalQuantity)}";
                 throw;
             }
+        }
+
+        public async Task<Movie> IncreaseAvailableQuantityMarkAsReturnedAndGetMovieByIdTransaction(int userMovieId, int movieId, CancellationToken cancellationToken = default)
+        {
+            var increaseQuantityQuery = @"UPDATE Movies                                          
+                                          SET AvailableQuantity = AvailableQuantity + 1,
+                                              LastChanged = GetDate()
+                                          OUTPUT INSERTED.*
+                                          WHERE Id = @Id";
+
+            var markAsReturnedQuery = @"Update UserMovies
+                                        SET IsReturned = 1,
+                                            LastChanged = GetDate()
+                                        WHERE Id = @Id";
+            Movie response = default(Movie)!;
+            try
+            {
+                using (var conn = new SqlConnection(_configuration.CurrentValue.SqlConnection))
+                {
+                    conn.Open();
+
+                    using (var transaction = conn.BeginTransaction())
+                    {
+                        try
+                        {
+                            response = await conn.QuerySingleOrDefaultAsync<Movie>(increaseQuantityQuery, new {Id = movieId}, transaction: transaction);
+                            await conn.ExecuteAsync(markAsReturnedQuery, new {Id = userMovieId}, transaction: transaction);
+
+                            transaction.Commit();
+                            
+                        }
+
+                        catch
+                        {
+                            transaction.Rollback();
+                            throw;
+                        }
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                e.Data.Add(ExceptionDataKeys.IsCritical, true);
+                e.Source = $"Error in {nameof(SqlMovieRepository)}.{nameof(IncreaseAvailableQuantityMarkAsReturnedAndGetMovieByIdTransaction)}";
+                throw;
+            }
+
+            return response;
         }
     }
 }
