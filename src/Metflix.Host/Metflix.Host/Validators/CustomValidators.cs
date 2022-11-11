@@ -15,9 +15,7 @@ namespace Metflix.Host.Validators
 
         public static IRuleBuilderOptions<T, string> MustBeValidDateTime<T, TElement>(this IRuleBuilder<T, string> ruleBuilder)
         {
-
-            
-
+                    
             return ruleBuilder
              .Must(x => DateTime.TryParseExact(string.IsNullOrEmpty(x) ? "" : x.Trim(), DateTimeFormats.AcceptableInputFormats, CultureInfo.InvariantCulture, DateTimeStyles.None, out _));            
             
