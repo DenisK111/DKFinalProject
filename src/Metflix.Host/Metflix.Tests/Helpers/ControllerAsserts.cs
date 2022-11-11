@@ -44,7 +44,8 @@ namespace Metflix.Tests.Helpers
 
         public static void AssertNoContentResult(IActionResult result)
         {
-            var notFoundObjectResult = result as NoContentResult;
+            var noContentResult = result as NoContentResult;
+            Assert.NotNull(noContentResult);
         }
     }
 }

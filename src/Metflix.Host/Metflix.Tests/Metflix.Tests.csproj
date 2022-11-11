@@ -28,8 +28,4 @@
     <ProjectReference Include="..\Metflix.Host\Metflix.Host.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="ServicesTests\" />
-  </ItemGroup>
-
 </Project>

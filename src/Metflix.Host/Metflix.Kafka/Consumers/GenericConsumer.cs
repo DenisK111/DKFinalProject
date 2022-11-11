@@ -49,7 +49,7 @@ namespace Metflix.Kafka.Consumers
                     var message = result.Message;
                     await HandleMessage(message, cancellationToken);
                 }
-            });
+            },cancellationToken);
 
             return Task.CompletedTask;
             

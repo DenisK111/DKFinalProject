@@ -10,6 +10,7 @@ using Metflix.Models.KafkaModels;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
+using Utils;
 
 namespace Metflix.DL.Repositories.Implementations.MongoRepositories
 {
@@ -39,9 +40,10 @@ namespace Metflix.DL.Repositories.Implementations.MongoRepositories
                  await _purchaseCollection.InsertOneAsync(data, cancellationToken: cancellationToken);
                
             }
-            catch
+            catch (Exception e)
             {
-                _logger.LogError($"Error in {nameof(AddLog)}");
+                e.Data.Add(ExceptionDataKeys.IsCritical, true);
+                e.Source = $"Error in {nameof(MongoInventoryLogRepository)}.{nameof(AddLog)}";
                 throw;
             }
         }
@@ -52,9 +54,9 @@ namespace Metflix.DL.Repositories.Implementations.MongoRepositories
             {
                 return await(await _purchaseCollection.FindAsync(x => true)).ToListAsync();
             }
-            catch
-            {
-                _logger.LogError($"Error in {nameof(GetAll)}");
+            catch (Exception e)
+            {              
+                e.Source = $"Error in {nameof(MongoInventoryLogRepository)}.{nameof(GetAll)}";
                 throw;
             }
         }
@@ -65,9 +67,9 @@ namespace Metflix.DL.Repositories.Implementations.MongoRepositories
             {
                 return (await(await _purchaseCollection.FindAsync(x => x.Id == id)).FirstOrDefaultAsync());
             }
-            catch
+            catch (Exception e)
             {
-                _logger.LogError($"Error in {nameof(GetById)}");
+                e.Source = $"Error in {nameof(MongoInventoryLogRepository)}.{nameof(GetById)}";
                 throw;
             }
         }

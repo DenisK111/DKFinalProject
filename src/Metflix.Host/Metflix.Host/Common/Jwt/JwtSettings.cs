@@ -1,4 +1,4 @@
-﻿namespace Metflix.Host.Common
+﻿namespace Metflix.Host.Common.Jwt
 {
     public class JwtSettings
     {

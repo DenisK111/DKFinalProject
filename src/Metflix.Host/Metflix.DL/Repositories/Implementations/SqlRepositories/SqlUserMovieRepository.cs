@@ -53,7 +53,7 @@ namespace Metflix.DL.Repositories.Implementations.SqlRepositories
             }
             catch (Exception e)
             {
-                _logger.LogError($"Error in {nameof(Add)}:{e.Message}", e);
+                e.Source = $"Error in {nameof(SqlUserMovieRepository)}.{nameof(Add)}";
                 throw;
             }
         }
@@ -72,7 +72,7 @@ namespace Metflix.DL.Repositories.Implementations.SqlRepositories
 
             catch (Exception e)
             {
-                _logger.LogError($"Error in {nameof(GetAll)}:{e.Message}");
+                e.Source = $"Error in {nameof(SqlUserMovieRepository)}.{nameof(GetAll)}";
                 throw;
             }
         }
@@ -92,7 +92,7 @@ namespace Metflix.DL.Repositories.Implementations.SqlRepositories
             }
             catch (Exception e)
             {
-                _logger.LogError($"Error in {nameof(GetAllByUserId)}:{e.Message}", e);
+                e.Source = $"Error in {nameof(SqlUserMovieRepository)}.{nameof(GetAllByUserId)}";
                 throw;
             }
         }
@@ -113,7 +113,7 @@ namespace Metflix.DL.Repositories.Implementations.SqlRepositories
             }
             catch (Exception e)
             {
-                _logger.LogError($"Error in {nameof(GetAllUnreturnedByUserId)}:{e.Message}", e);
+                e.Source = $"Error in {nameof(SqlUserMovieRepository)}.{nameof(GetAllUnreturnedByUserId)}";
                 throw;
             }
         }
@@ -135,7 +135,7 @@ namespace Metflix.DL.Repositories.Implementations.SqlRepositories
 
             catch (Exception e)
             {
-                _logger.LogError($"Error in {nameof(GetAllOverDue)}:{e.Message}");
+                e.Source = $"Error in {nameof(SqlUserMovieRepository)}.{nameof(GetAllOverDue)}";
                 throw;
             }
 
@@ -156,7 +156,7 @@ namespace Metflix.DL.Repositories.Implementations.SqlRepositories
             }
             catch (Exception e)
             {
-                _logger.LogError($"Error in {nameof(GetById)}:{e.Message}", e);
+                e.Source = $"Error in {nameof(SqlUserMovieRepository)}.{nameof(GetById)}";
                 throw;
             }
         }
@@ -180,7 +180,7 @@ namespace Metflix.DL.Repositories.Implementations.SqlRepositories
 
             catch (Exception e)
             {
-                _logger.LogError($"Error in {nameof(MarkAsReturned)}:{e.Message}", e);
+                e.Source = $"Error in {nameof(SqlUserMovieRepository)}.{nameof(MarkAsReturned)}";
                 throw;
             }
         }
@@ -204,7 +204,7 @@ namespace Metflix.DL.Repositories.Implementations.SqlRepositories
             }
             catch (Exception e)
             {
-                _logger.LogError($"Error in {nameof(Update)}:{e.Message}", e);
+                e.Source = $"Error in {nameof(SqlUserMovieRepository)}.{nameof(Update)}";
                 throw;
             }
         }

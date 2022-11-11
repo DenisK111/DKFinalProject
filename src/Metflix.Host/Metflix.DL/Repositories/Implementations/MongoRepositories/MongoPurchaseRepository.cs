@@ -1,5 +1,6 @@
 ﻿using System;
 using Metflix.DL.Repositories.Contracts;
+using Metflix.DL.Repositories.Implementations.SqlRepositories;
 using Metflix.Models.Configurations;
 using Metflix.Models.DbModels;
 using Microsoft.Extensions.Logging;
@@ -35,9 +36,10 @@ namespace Metflix.DL.Repositories.Implementations.MongoRepositories
             {
                 await _purchaseCollection.InsertOneAsync(purchase, cancellationToken: cancellationToken);
             }
-            catch
+            catch(Exception e)
             {
-                _logger.LogError($"Error in {nameof(AddPurchase)}");
+                e.Data.Add("IsCritical", true);
+                e.Source = $"Error in {nameof(MongoPurchaseRepository)}.{nameof(AddPurchase)}";
                 throw;
             }         
            
@@ -49,12 +51,12 @@ namespace Metflix.DL.Repositories.Implementations.MongoRepositories
             {
                 return await (await _purchaseCollection.FindAsync(x => true)).ToListAsync();
             }
-            catch
-            {
-                _logger.LogError($"Error in {nameof(GetAll)}");
+            catch (Exception e)
+            {                
+                e.Source = $"Error in {nameof(MongoPurchaseRepository)}.{nameof(GetAll)}";
                 throw;
             }
-            
+
         }
 
         public async Task<IEnumerable<Purchase>> GetAllByUserId(string userId,CancellationToken cancellationToken = default)
@@ -63,11 +65,11 @@ namespace Metflix.DL.Repositories.Implementations.MongoRepositories
             {
                 return await (await _purchaseCollection.FindAsync(x => x.UserId == userId)).ToListAsync();
             }
-            catch
+            catch (Exception e)
             {
-                _logger.LogError($"Error in {nameof(GetAllByUserId)}");
+                e.Source = $"Error in {nameof(MongoPurchaseRepository)}.{nameof(GetAllByUserId)}";
                 throw;
-            }            
+            }
         }
 
         public async Task<Purchase?> GetById(Guid id, CancellationToken cancellationToken = default)
@@ -76,9 +78,9 @@ namespace Metflix.DL.Repositories.Implementations.MongoRepositories
             {
                 return (await(await _purchaseCollection.FindAsync(x=>x.Id == id)).FirstOrDefaultAsync());
             }
-            catch
+            catch (Exception e)
             {
-                _logger.LogError($"Error in {nameof(GetById)}");
+                e.Source = $"Error in {nameof(MongoPurchaseRepository)}.{nameof(GetById)}";
                 throw;
             }
         }
@@ -89,9 +91,9 @@ namespace Metflix.DL.Repositories.Implementations.MongoRepositories
             {
                 return (await (await _purchaseCollection.FindAsync(x => x.Id == id && x.UserId == userId)).FirstOrDefaultAsync());
             }
-            catch
+            catch (Exception e)
             {
-                _logger.LogError($"Error in {nameof(GetById)}");
+                e.Source = $"Error in {nameof(MongoPurchaseRepository)}.{nameof(GetByIdAndUserId)}";
                 throw;
             }
         }
@@ -108,9 +110,9 @@ namespace Metflix.DL.Repositories.Implementations.MongoRepositories
                .ToListAsync())
                .Sum());
             }
-            catch
+            catch (Exception e)
             {
-                _logger.LogError($"Error in {nameof(GetTotalSales)}");
+                e.Source = $"Error in {nameof(MongoPurchaseRepository)}.{nameof(GetTotalSales)}";
                 throw;
             }
         }

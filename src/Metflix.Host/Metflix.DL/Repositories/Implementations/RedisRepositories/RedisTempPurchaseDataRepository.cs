@@ -6,10 +6,12 @@ using System.Text;
 using System.Threading.Tasks;
 using DnsClient.Internal;
 using Metflix.DL.Repositories.Contracts;
+using Metflix.DL.Repositories.Implementations.MongoRepositories;
 using Metflix.Models.Configurations;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using StackExchange.Redis;
+using Utils;
 
 namespace Metflix.DL.Repositories.Implementations.RedisRepositories
 {
@@ -32,7 +34,8 @@ namespace Metflix.DL.Repositories.Implementations.RedisRepositories
             }
             catch (Exception e)
             {
-                _logger.LogError($"{e.Message}\r\n{e.StackTrace}");
+                e.Data.Add(ExceptionDataKeys.IsCritical, true);
+                e.Source = $"Error in {nameof(RedisTempPurchaseDataRepository)}.{nameof(SetOrUpdateEntryAsync)}";
                 throw;
             }
         }
@@ -45,7 +48,8 @@ namespace Metflix.DL.Repositories.Implementations.RedisRepositories
             }
             catch (Exception e)
             {
-                _logger.LogError($"{e.Message}\r\n{e.StackTrace}");
+                e.Data.Add(ExceptionDataKeys.IsCritical, true);
+                e.Source = $"Error in {nameof(RedisTempPurchaseDataRepository)}.{nameof(DeleteEntryAsync)}";
                 throw;
             }
         }
@@ -59,7 +63,8 @@ namespace Metflix.DL.Repositories.Implementations.RedisRepositories
             }
             catch (Exception e)
             {
-                _logger.LogError($"{e.Message}\r\n{e.StackTrace}");
+                e.Data.Add(ExceptionDataKeys.IsCritical, true);
+                e.Source = $"Error in {nameof(RedisTempPurchaseDataRepository)}.{nameof(GetValueAsync)}";
                 throw;
             }
         }
@@ -72,7 +77,8 @@ namespace Metflix.DL.Repositories.Implementations.RedisRepositories
             }
             catch (Exception e)
             {
-                _logger.LogError($"{e.Message}\r\n{e.StackTrace}");
+                e.Data.Add(ExceptionDataKeys.IsCritical, true);
+                e.Source = $"Error in {nameof(RedisTempPurchaseDataRepository)}.{nameof(ContainsKeyAsync)}";
                 throw;
             }
         }

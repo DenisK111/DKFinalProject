@@ -12,7 +12,7 @@ using Metflix.Host.AutoMapper;
 
 namespace Metflix.Tests.Helpers
 {
-    public class ResponseGenerator
+    public static class ResponseGenerator
     {
         private static readonly IMapper _mapper = new MapperConfiguration(cfg =>
         {

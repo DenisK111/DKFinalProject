@@ -4,6 +4,7 @@ using System.Data.SqlClient;
 using System.Net;
 using Utils;
 
+
 namespace Metflix.Host.Middleware.ErrorHandlerMiddleware
 {
     public class ErrorHandlerMiddleware
@@ -30,24 +31,34 @@ namespace Metflix.Host.Middleware.ErrorHandlerMiddleware
 
                 response.StatusCode = error switch
                 {
-                    AppException e => (int)HttpStatusCode.BadRequest,
+                    
                     KeyNotFoundException e => (int)HttpStatusCode.NotFound,
                     _ => (int)HttpStatusCode.InternalServerError,
                 };
 
-                var result = new
+
+                
+                var result = new //TO BE USED FOR END USERS
                 {
                     message = error switch
                     {
                         SqlException=> ResponseMessages.SqlExceptionMessage,
-                        AppException e => e.Message,
+                        
                         KeyNotFoundException e => e.Message,
                         _ => ResponseMessages.InternalServerErrorMessage
                     }
                 };
 
-                _logger.LogError(error.StackTrace);
-                await response.WriteAsJsonAsync(error.Message);
+                if (error.Data[ExceptionDataKeys.IsCritical] != null)
+                {
+                    _logger.LogCritical($"{error.Source}\r\n{error.Message}\r\n{error.StackTrace}");
+                }
+                else
+                {
+                    _logger.LogError($"{error.Source}\r\n{error.Message}\r\n{error.StackTrace}");
+                }
+                
+                await response.WriteAsJsonAsync($"{error.Source}\r\n{error.Message}\r\n{error.StackTrace}");
             }
         }
     }

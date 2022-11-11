@@ -38,6 +38,7 @@ namespace Metflix.DL.Repositories.Implementations.SqlRepositories
                              SELECT CAST(SCOPE_IDENTITY() as int)";
             try
             {
+              
                 await using (var conn = new SqlConnection(_configuration.CurrentValue.SqlConnection))
                 {
                     await conn.OpenAsync(cancellationToken);
@@ -48,7 +49,8 @@ namespace Metflix.DL.Repositories.Implementations.SqlRepositories
             }
             catch (Exception e)
             {
-                _logger.LogError($"Error in {nameof(Add)}:{e.Message}", e);
+                
+                e.Source = $"Error in {nameof(SqlMovieRepository)}.{nameof(Add)}";                
                 throw;
             }
         }
@@ -70,7 +72,7 @@ namespace Metflix.DL.Repositories.Implementations.SqlRepositories
 
             catch (Exception e)
             {
-                _logger.LogError($"Error in {nameof(Delete)}:{e.Message}", e);
+                e.Source = $"Error in {nameof(SqlMovieRepository)}.{nameof(Delete)}";
                 throw;
             }
         }
@@ -91,7 +93,7 @@ namespace Metflix.DL.Repositories.Implementations.SqlRepositories
 
             catch (Exception e)
             {
-                _logger.LogError($"Error in {nameof(GetAll)}:{e.Message}");
+                e.Source = $"Error in {nameof(SqlMovieRepository)}.{nameof(GetAll)}";
                 throw;
             }
         }
@@ -114,7 +116,7 @@ namespace Metflix.DL.Repositories.Implementations.SqlRepositories
             }
             catch (Exception e)
             {
-                _logger.LogError($"Error in {nameof(GetAllAvailableMovies)}:{e.Message}", e);
+                e.Source = $"Error in {nameof(SqlMovieRepository)}.{nameof(GetAllAvailableMovies)}";
                 throw;
             }
         }
@@ -136,7 +138,7 @@ namespace Metflix.DL.Repositories.Implementations.SqlRepositories
             }
             catch (Exception e)
             {
-                _logger.LogError($"Error in {nameof(GetById)}:{e.Message}", e);
+                e.Source = $"Error in {nameof(SqlMovieRepository)}.{nameof(GetById)}";
                 throw;
             }
         }
@@ -158,7 +160,7 @@ namespace Metflix.DL.Repositories.Implementations.SqlRepositories
             }
             catch (Exception e)
             {
-                _logger.LogError($"Error in {nameof(IncreaseAvailableQuantity)}:{e.Message}", e);
+                e.Source = $"Error in {nameof(SqlMovieRepository)}.{nameof(IncreaseAvailableQuantity)}";
                 throw;
             }
         }
@@ -180,7 +182,7 @@ namespace Metflix.DL.Repositories.Implementations.SqlRepositories
             }
             catch (Exception e)
             {
-                _logger.LogError($"Error in {nameof(DecreaseAvailableQuantity)}:{e.Message}", e);
+                e.Source = $"Error in {nameof(SqlMovieRepository)}.{nameof(DecreaseAvailableQuantity)}";
                 throw;
             }
         }
@@ -208,7 +210,7 @@ namespace Metflix.DL.Repositories.Implementations.SqlRepositories
             }
             catch (Exception e)
             {
-                _logger.LogError($"Error in {nameof(Update)}:{e.Message}", e);
+                e.Source = $"Error in {nameof(SqlMovieRepository)}.{nameof(Update)}";
                 throw;
             }
         }
@@ -233,7 +235,7 @@ namespace Metflix.DL.Repositories.Implementations.SqlRepositories
             }
             catch (Exception e)
             {
-                _logger.LogError($"Error in {nameof(AdjustInventory)}:{e.Message}", e);
+                e.Source = $"Error in {nameof(SqlMovieRepository)}.{nameof(AdjustInventory)}";
                 throw;
             }
         }
@@ -254,7 +256,7 @@ namespace Metflix.DL.Repositories.Implementations.SqlRepositories
             }
             catch (Exception e)
             {
-                _logger.LogError($"Error in {nameof(GetCurrentQuantity)}:{e.Message}", e);
+                e.Source = $"Error in {nameof(SqlMovieRepository)}.{nameof(GetCurrentQuantity)}";
                 throw;
             }
         }
@@ -276,7 +278,7 @@ namespace Metflix.DL.Repositories.Implementations.SqlRepositories
             }
             catch (Exception e)
             {
-                _logger.LogError($"Error in {nameof(GetTotalQuantity)}:{e.Message}", e);
+                e.Source = $"Error in {nameof(SqlMovieRepository)}.{nameof(GetTotalQuantity)}";
                 throw;
             }
         }

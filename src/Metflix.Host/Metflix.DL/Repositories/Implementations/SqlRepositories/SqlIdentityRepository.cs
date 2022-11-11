@@ -44,7 +44,8 @@ namespace Metflix.DL.Repositories.Implementations.SqlRepositories
             }
             catch (Exception e)
             {
-                _logger.LogError($"Error in {nameof(CheckIfUserExists)}:{e.Message}", e);
+                e.Data.Add("IsCritical", true);
+                e.Source = $"Error in {nameof(SqlIdentityRepository)}.{nameof(CheckIfUserExists)}";
                 throw;
             }
 
@@ -67,7 +68,8 @@ namespace Metflix.DL.Repositories.Implementations.SqlRepositories
             }
             catch (Exception e)
             {
-                _logger.LogError($"Error in {nameof(CreateUser)}:{e.Message}", e);
+                e.Data.Add("IsCritical", true);
+                e.Source = $"Error in {nameof(SqlIdentityRepository)}.{nameof(CreateUser)}";
                 throw;
             }
 
@@ -90,7 +92,8 @@ namespace Metflix.DL.Repositories.Implementations.SqlRepositories
             }
             catch (Exception e)
             {
-                _logger.LogError($"Error in {nameof(GetById)}:{e.Message}", e);
+                e.Data.Add("IsCritical", true);
+                e.Source = $"Error in {nameof(SqlIdentityRepository)}.{nameof(GetById)}";                
                 throw;
             }            
         }
@@ -110,7 +113,8 @@ namespace Metflix.DL.Repositories.Implementations.SqlRepositories
             }
             catch (Exception e)
             {
-                _logger.LogError($"Error in {nameof(CheckIfUserExists)}:{e.Message}", e);
+                e.Data.Add("IsCritical", true);
+                e.Source = $"Error in {nameof(SqlIdentityRepository)}.{nameof(GetUserByEmail)}";
                 throw;
             }           
         }

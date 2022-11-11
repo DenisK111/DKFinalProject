@@ -26,8 +26,8 @@ namespace Metflix.Host.DL.Seeding.Implementations
                 return;
             }
 
-            var data = await File.ReadAllTextAsync($"{AppDomain.CurrentDomain.BaseDirectory}MoviesSeed.json");
-            var movies = JsonConvert.DeserializeObject<IEnumerable<Movie>>(data);
+            var data = await File.ReadAllTextAsync($"{AppDomain.CurrentDomain.BaseDirectory}/Seeding/SeedFiles/MoviesSeed.json");
+            var movies = JsonConvert.DeserializeObject<IEnumerable<Movie>>(data);           
 
             foreach (var movie in movies!)
             {

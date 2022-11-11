@@ -5,7 +5,7 @@ using MediatR;
 using Metflix.BL.MediatR.QueryHandlers.Movies;
 using Metflix.DL.Seeding;
 using Metflix.DL.Seeding.Contracts;
-using Metflix.Host.Common;
+using Metflix.Host.Common.Jwt;
 using Metflix.Host.Extensions;
 using Metflix.Host.HealthChecks;
 using Metflix.Host.Middleware.ErrorHandlerMiddleware;
