@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using System.Transactions;
 using Dapper;
 using Metflix.DL.Repositories.Contracts;
 using Metflix.Models.DbModels;
@@ -15,6 +17,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.VisualBasic;
+using Utils;
+using static MongoDB.Driver.WriteConcern;
 
 namespace Metflix.DL.Repositories.Implementations.SqlRepositories
 {
@@ -43,7 +47,7 @@ namespace Metflix.DL.Repositories.Implementations.SqlRepositories
                     var result = await conn.QuerySingleAsync<int>(query, new
                     {
                         UserId = model.UserId,
-                        MovieId = model.MovieId,                        
+                        MovieId = model.MovieId,
                         IsReturned = model.IsReturned,
                         DaysFor = model.DaysFor
                     });
@@ -174,7 +178,7 @@ namespace Metflix.DL.Repositories.Implementations.SqlRepositories
                 await using (var conn = new SqlConnection(_configuration.CurrentValue.SqlConnection))
                 {
                     await conn.OpenAsync(cancellationToken);
-                    await conn.ExecuteAsync(query, new { Id = id });                    
+                    await conn.ExecuteAsync(query, new { Id = id });
                 }
             }
 
@@ -208,5 +212,103 @@ namespace Metflix.DL.Repositories.Implementations.SqlRepositories
                 throw;
             }
         }
+
+        public async Task<IEnumerable<int>> DecreaseAvailableQuantityAndAddUserMoviesTransaction(List<UserMovie> userMovies, CancellationToken cancellationToken = default)
+        {
+            var queryInsert = @"INSERT INTO UserMovies
+                                OUTPUT INSERTED.Id
+                                VALUES(@UserId,@MovieId,GetDate(),DateAdd(Day,@DaysFor,GetDate()),@IsReturned,GetDate(),@DaysFor)";
+
+            var queryDecreaseQuantity = @"UPDATE Movies
+                          SET AvailableQuantity = AvailableQuantity - 1,
+                              LastChanged = GetDate()
+                          WHERE Id = @MovieId";
+
+            var ids = new List<int>();
+            try
+            {
+                using (var conn = new SqlConnection(_configuration.CurrentValue.SqlConnection))
+                {
+                    conn.Open();
+
+                    using (var transaction = conn.BeginTransaction())
+                    {
+                        try
+                        {
+                            await conn.ExecuteAsync(queryDecreaseQuantity, userMovies, transaction: transaction);
+
+                            var count = userMovies.Count();
+                            for (int i = 0; i < count; i++)
+                            {
+                                var id = await conn.QuerySingleAsync<int>(queryInsert, userMovies[i], transaction: transaction);
+                                ids.Add(id);
+                            }
+
+                            transaction.Commit();
+                        }                                             
+
+                        catch
+                        {
+                            transaction.Rollback();
+                            throw;
+                        }
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                e.Data.Add(ExceptionDataKeys.IsCritical, true);
+                e.Source = $"Error in {nameof(SqlUserMovieRepository)}.{nameof(DecreaseAvailableQuantityAndAddUserMoviesTransaction)}";
+                throw;
+            }
+
+            return ids;
+        }
+
+        public async Task ReverseDecreaseAvailableQuantityAndAddUserMoviesTransaction(IEnumerable<int> userMovieIds, IEnumerable<int> movieIds,CancellationToken cancellationToken = default)
+        {
+            var queryDelete = @"DELETE FROM UserMovies
+                                Where Id = @Id";
+
+            var queryIncreaseQuantity = @"UPDATE Movies
+                                         SET AvailableQuantity = AvailableQuantity + 1,
+                                             LastChanged = GetDate()
+                                         WHERE Id = @MovieId";
+
+            var ids = new List<int>();
+            try
+            {
+                using (var conn = new SqlConnection(_configuration.CurrentValue.SqlConnection))
+                {
+                    conn.Open();
+
+                    using (var transaction = conn.BeginTransaction())
+                    {
+                        try
+                        {
+                            await conn.ExecuteAsync(queryIncreaseQuantity, movieIds.Select(x => new {MovieId = x}), transaction: transaction);
+                            await conn.ExecuteAsync(queryDelete, userMovieIds.Select(x => new { Id = x }), transaction: transaction);                            
+
+                            transaction.Commit();
+                        }
+
+                        catch
+                        {
+                            transaction.Rollback();
+                            throw;
+                        }
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                e.Data.Add(ExceptionDataKeys.IsCritical, true);
+                e.Source = $"Error in {nameof(SqlUserMovieRepository)}.{nameof(DecreaseAvailableQuantityAndAddUserMoviesTransaction)}";
+                throw;
+            }            
+        }
     }
+
+   
 }
+

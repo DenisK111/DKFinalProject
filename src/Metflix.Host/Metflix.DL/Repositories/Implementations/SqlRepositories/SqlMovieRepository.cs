@@ -34,7 +34,7 @@ namespace Metflix.DL.Repositories.Implementations.SqlRepositories
         public async Task<Movie> Add(Movie model, CancellationToken cancellationToken = default)
         {
             var query = @"INSERT INTO Movies ([Name],TotalQuantity,AvailableQuantity,PricePerDay,LastChanged,Year)
-                            VALUES (@Name,@TotalQuantity,@TotalQuantity,@PricePerDay,GetDate(),@Year)
+                            VALUES (@Name,@TotalQuantity,@AvailableQuantity,@PricePerDay,GetDate(),@Year)
                              SELECT CAST(SCOPE_IDENTITY() as int)";
             try
             {

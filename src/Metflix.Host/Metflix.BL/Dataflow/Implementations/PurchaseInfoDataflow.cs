@@ -16,17 +16,15 @@ using Metflix.Models.KafkaModels;
 namespace Metflix.BL.Dataflow.Implementations
 {
     public class PurchaseInfoDataflow : IPurchaseInfoDataflow
-    {
-        private readonly IMovieRepository _movieRepository;
+    {       
         private readonly IUserMovieRepository _userMovieRepository;
         private readonly IPurchaseRepository _purchaseRepository;
-        private readonly TransformBlock<PurchaseInfoData, PurchaseInfoData> _adjustInventoryBlock;
+        private readonly TransformBlock<PurchaseInfoData, Purchase> _recordPurchaseBlock;
         private readonly IMapper _mapper;
         private readonly ITempPurchaseDataRepository _tempPurchaseRepository;
 
-        public PurchaseInfoDataflow(IMovieRepository movieRepository, IUserMovieRepository userMovieRepository, IPurchaseRepository purchaseRepository, IMapper mapper, ITempPurchaseDataRepository tempPurchaseRepository)
-        {
-            _movieRepository = movieRepository;
+        public PurchaseInfoDataflow(IUserMovieRepository userMovieRepository, IPurchaseRepository purchaseRepository, IMapper mapper, ITempPurchaseDataRepository tempPurchaseRepository)
+        {           
             _userMovieRepository = userMovieRepository;
             _purchaseRepository = purchaseRepository;
             _mapper = mapper;
@@ -38,17 +36,22 @@ namespace Metflix.BL.Dataflow.Implementations
                 BoundedCapacity = 4
             };
 
-            _adjustInventoryBlock = new TransformBlock<PurchaseInfoData, PurchaseInfoData>(AdjustInventory, options);
-            var writeToUserMoviesBlock = new TransformBlock<PurchaseInfoData, FullPurchaseInfoData>(WriteToUserMovies, options);
-            var recordPurchaseBlock = new ActionBlock<FullPurchaseInfoData>(RecordPurchase, options);
+            _recordPurchaseBlock = new TransformBlock<PurchaseInfoData,Purchase>(RecordPurchase, options);            
+            var writeToTempPurchaseDataBlock = new ActionBlock<Purchase>(WriteToTempPurchaseData, options);
 
             var linkOptions = new DataflowLinkOptions()
             {
                 PropagateCompletion = true,
             };
 
-            _adjustInventoryBlock.LinkTo(writeToUserMoviesBlock, linkOptions);
-            writeToUserMoviesBlock.LinkTo(recordPurchaseBlock, linkOptions);            
+            _recordPurchaseBlock.LinkTo(writeToTempPurchaseDataBlock, linkOptions);
+                        
+        }
+
+        private async Task WriteToTempPurchaseData(Purchase purchase)
+        {
+            var purchaseAsByteArray = MessagePackSerializer.Serialize(purchase);
+            await _tempPurchaseRepository.SetOrUpdateEntryAsync(purchase.UserId, purchaseAsByteArray);
         }
 
         public void Dispose()
@@ -58,22 +61,13 @@ namespace Metflix.BL.Dataflow.Implementations
 
         public async Task ProcessData(PurchaseInfoData data, CancellationToken cancellationToken = default)
         {
-            await _adjustInventoryBlock.SendAsync(data, cancellationToken);
+            await _recordPurchaseBlock.SendAsync(data, cancellationToken);
         }
+       
 
-        private async Task<PurchaseInfoData> AdjustInventory(PurchaseInfoData data)
-        {
-            foreach (var movieId in data.MovieInfoData.Select(x => x.Id))
-            {
-                await _movieRepository.DecreaseAvailableQuantity(movieId);
-            }
-
-            return data;
-        }
-
-        private async Task<FullPurchaseInfoData> WriteToUserMovies(PurchaseInfoData data)
-        {
-            var userMovieIds = new List<int>();
+        private async Task<Purchase> RecordPurchase(PurchaseInfoData data)
+        {                        
+            var userMovies = new List<UserMovie>();
 
             foreach (var movie in data.MovieInfoData)
             {
@@ -84,21 +78,18 @@ namespace Metflix.BL.Dataflow.Implementations
                     DaysFor = data.Days,
                 };
 
-                var userMovieId = await _userMovieRepository.Add(UserMovie);
-                userMovieIds.Add(userMovieId);
+                userMovies.Add(UserMovie);               
             }
 
-            var fullPurchaseInfoData = _mapper.Map<FullPurchaseInfoData>(data);
-            fullPurchaseInfoData.UserMovieIds = userMovieIds;
-            return fullPurchaseInfoData;
-        }
+            var userMovieIds = await _userMovieRepository.DecreaseAvailableQuantityAndAddUserMoviesTransaction(userMovies);
 
-        private async Task RecordPurchase(FullPurchaseInfoData data)
-        {
+            var fullPurchaseInfoData = _mapper.Map<FullPurchaseInfoData>(data);
+            fullPurchaseInfoData.UserMovieIds = userMovieIds;          
+
             var purchase = new Purchase()
             {
                 Days = data.Days,
-                UserMovieIds = data.UserMovieIds,
+                UserMovieIds = fullPurchaseInfoData.UserMovieIds,
                 Movies = _mapper.Map<IEnumerable<MovieRecord>>(data.MovieInfoData),
                 UserId = data.UserId,
                 TotalPrice = data.MovieInfoData.Select(x => x.PricePerDay).Sum() * data.Days,
@@ -107,9 +98,17 @@ namespace Metflix.BL.Dataflow.Implementations
                 LastChanged = DateTime.UtcNow
             };
 
-            await _purchaseRepository.AddPurchase(purchase);
-            var purchaseAsByteArray = MessagePackSerializer.Serialize(purchase);
-            await _tempPurchaseRepository.SetOrUpdateEntryAsync(purchase.UserId,purchaseAsByteArray);          
+            try
+            {
+                await _purchaseRepository.AddPurchase(purchase);
+            }
+            catch
+            {
+                await _userMovieRepository.ReverseDecreaseAvailableQuantityAndAddUserMoviesTransaction(userMovieIds, data.MovieInfoData.Select(x => x.Id));
+                    throw;
+            }
+            
+            return purchase;               
         }
     }
 }

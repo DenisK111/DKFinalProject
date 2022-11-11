@@ -8,6 +8,6 @@ namespace Metflix.Models.Requests.Purchase
 {
     public class ReturnMovieRequest
     {
-        public int MovieId { get; set; }
+        public int UserMovieId { get; set; }
     }
 }

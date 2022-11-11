@@ -350,7 +350,7 @@ namespace Metflix.Tests.MediatRTests
 
             var request = new ReturnMovieRequest()
             {
-                MovieId = 1
+                UserMovieId = 1
             };
 
             var command = new ReturnMovieCommand(request, "TestId");
@@ -376,7 +376,7 @@ namespace Metflix.Tests.MediatRTests
 
             var request = new ReturnMovieRequest()
             {
-                MovieId = 1
+                UserMovieId = 1
             };
 
             var command = new ReturnMovieCommand(request, "TestId");
@@ -402,7 +402,7 @@ namespace Metflix.Tests.MediatRTests
 
             var request = new ReturnMovieRequest()
             {
-                MovieId = 1
+                UserMovieId = 1
             };
 
             var command = new ReturnMovieCommand(request, "TestId");

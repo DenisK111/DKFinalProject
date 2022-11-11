@@ -7,7 +7,7 @@ namespace Metflix.Host.Validators.PurchaseValidators
     {
         public ReturnMovieRequestValidator()
         {
-            RuleFor(x => x.MovieId)
+            RuleFor(x => x.UserMovieId)
                 .NotEmpty()
                 .GreaterThan(0);
         }

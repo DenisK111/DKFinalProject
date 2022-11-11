@@ -74,6 +74,7 @@ namespace Metflix.BL.MediatR.CommandHandlers.Purchases
                     Message = string.Format(ResponseMessages.NotEnoughQtyMovies, string.Join(", ", notEnoughQuantity))
                 };
             }
+            
 
             var kafkaMessageValue = new PurchaseUserInputData()
             {
@@ -82,6 +83,7 @@ namespace Metflix.BL.MediatR.CommandHandlers.Purchases
                 Days = request.Request.Days,
             };
             var key = request.UserId;
+            
 
             if (await _tempPurchaseRepository.ContainsKeyAsync(key))
             {

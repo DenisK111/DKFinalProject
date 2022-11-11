@@ -11,7 +11,8 @@ namespace Metflix.Host.AutoMapper
     {
         public MovieProfile()
         {
-            CreateMap<AddMovieRequest, Movie>();
+            CreateMap<AddMovieRequest, Movie>()
+                .ForMember(x=>x.AvailableQuantity,y=>y.MapFrom(s=>s.TotalQuantity));
             CreateMap<UpdateMovieRequest, Movie>();
             CreateMap<Movie, MovieDto>();
             CreateMap<Movie, AvailableMovieDto>();
