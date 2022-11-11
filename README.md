@@ -12,16 +12,16 @@ IdentityController: Used for Registration and Login
 
 <h3>Technologies and Libraries used</h3>
 
-.NET 6
-SqlServer
-MongoDb
-Redis
-Apache Kafka
-MediatR
-FluentValidatation
-xUnit
-Moq
-FluentAssertions
-Automapper
-Dapper
-Serilog
+.NET 6 </br>
+SqlServer </br>
+MongoDb </br>
+Redis </br>
+Apache Kafka </br>
+MediatR </br>
+FluentValidatation </br>
+xUnit </br>
+Moq </br>
+FluentAssertions </br>
+Automapper </br>
+Dapper </br>
+Serilog </br>
