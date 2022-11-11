@@ -1,5 +1,4 @@
 ﻿using Metflix.BL.Services.Contracts;
-using Metflix.Models.DbModels;
 using Microsoft.AspNetCore.Authorization;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -12,7 +11,6 @@ using Metflix.Models.Configurations;
 using FluentValidation.AspNetCore;
 using Metflix.Host.Validators.IdentityValidators;
 using Metflix.Models.Responses;
-using Utils;
 using System.Net;
 using Metflix.Host.Extensions;
 using Metflix.Models.Common;

@@ -10,7 +10,6 @@ using Metflix.Host.HostedServices;
 using Metflix.Kafka.Contracts;
 using Metflix.Kafka.Producers;
 using Metflix.Models.Configurations.KafkaSettings.Producers;
-using Metflix.Models.DbModels.Configurations;
 using Metflix.Models.KafkaModels;
 
 namespace Metflix.Host.Extensions

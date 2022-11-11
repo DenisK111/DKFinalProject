@@ -1,14 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Metflix.DL.Repositories.Contracts;
+﻿using Metflix.DL.Repositories.Contracts;
 using Metflix.Host.DL.Seeding.Contracts;
 using Metflix.Models.DbModels;
 using Metflix.Models.DbModels.Helpers;
-using Microsoft.AspNetCore.Identity;
-using Newtonsoft.Json;
 using Utils;
 
 namespace Metflix.DL.Seeding.Implementations

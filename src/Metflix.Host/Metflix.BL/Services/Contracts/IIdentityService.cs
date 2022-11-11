@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Metflix.Models.DbModels;
+﻿using Metflix.Models.DbModels;
 using Metflix.Models.Requests.Identity;
 using Metflix.Models.Responses.Users;
-using Microsoft.AspNetCore.Identity;
 
 namespace Metflix.BL.Services.Contracts
 {

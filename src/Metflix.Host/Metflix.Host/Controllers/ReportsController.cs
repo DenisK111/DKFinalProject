@@ -1,11 +1,8 @@
 ﻿using MediatR;
-using Metflix.Host.Common;
 using Metflix.Host.Extensions;
 using Metflix.Models.DbModels.Helpers;
-using Metflix.Models.Mediatr.Commands.Movies;
 using Metflix.Models.Mediatr.Queries.Reports;
 using Metflix.Models.Requests.Reports;
-using Metflix.Models.Responses.Movies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

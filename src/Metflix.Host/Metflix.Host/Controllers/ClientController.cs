@@ -1,16 +1,12 @@
-﻿using System.Net;
-using MediatR;
-using Metflix.Host.Common;
+﻿using MediatR;
 using Metflix.Host.Extensions;
 using Metflix.Models.Mediatr.Commands.Purchases;
 using Metflix.Models.Mediatr.Queries.Movies;
 using Metflix.Models.Mediatr.Queries.Purchases;
 using Metflix.Models.Requests.Purchase;
-using Metflix.Models.Responses.Purchases;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
 
 namespace Metflix.Host.Controllers
 {

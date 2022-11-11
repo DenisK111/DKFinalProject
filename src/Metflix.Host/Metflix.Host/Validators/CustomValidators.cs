@@ -1,6 +1,5 @@
 ﻿using System.Globalization;
 using FluentValidation;
-using Metflix.Models.Requests.Movies;
 using Utils;
 
 namespace Metflix.Host.Validators

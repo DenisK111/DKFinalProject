@@ -1,13 +1,7 @@
-﻿using System.Net;
-using MediatR;
-using Metflix.DL.Repositories.Contracts;
-using Metflix.Host.Common;
+﻿using MediatR;
 using Metflix.Host.Extensions;
-using Metflix.Models.DbModels;
 using Metflix.Models.DbModels.Helpers;
-using Metflix.Models.Mediatr.Commands;
 using Metflix.Models.Mediatr.Commands.Movies;
-using Metflix.Models.Mediatr.Queries;
 using Metflix.Models.Mediatr.Queries.Movies;
 using Metflix.Models.Requests.Movies;
 using Metflix.Models.Responses.Movies;

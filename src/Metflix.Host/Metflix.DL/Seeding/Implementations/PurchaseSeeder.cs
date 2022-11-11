@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Metflix.DL.Repositories.Contracts;
+﻿using Metflix.DL.Repositories.Contracts;
 using Metflix.Host.DL.Seeding.Contracts;
 using Metflix.Models.DbModels;
 

@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Net;
 using AutoMapper;
 using Metflix.BL.Services.Contracts;
 using Metflix.DL.Repositories.Contracts;
@@ -11,7 +6,6 @@ using Metflix.Models.Common;
 using Metflix.Models.DbModels;
 using Metflix.Models.Requests.Identity;
 using Metflix.Models.Responses.Users;
-using Microsoft.AspNetCore.Identity;
 using Utils;
 
 namespace Metflix.BL.Services.Implementations

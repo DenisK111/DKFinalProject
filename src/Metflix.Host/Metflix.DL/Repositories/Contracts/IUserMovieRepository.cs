@@ -1,6 +1,5 @@
 ﻿using Metflix.Models.DbModels;
 using Metflix.Models.DbModels.DbDtos;
-using Metflix.Models.Responses.Purchases.PurchaseDtos;
 
 namespace Metflix.DL.Repositories.Contracts
 {

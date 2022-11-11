@@ -1,5 +1,4 @@
 ﻿using Metflix.Host.Common.Jwt;
-using Metflix.Host.Controllers;
 using Metflix.Models.Responses;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;

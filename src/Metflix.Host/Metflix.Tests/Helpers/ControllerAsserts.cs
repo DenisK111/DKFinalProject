@@ -1,11 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using FluentAssertions;
+﻿using FluentAssertions;
 using Metflix.Models.Responses;
-using Metflix.Models.Responses.Movies.MovieDtos;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Metflix.Tests.Helpers

@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Confluent.Kafka;
+﻿using Confluent.Kafka;
 using Metflix.Kafka.Contracts;
 using Metflix.Kafka.Serialization;
 using Metflix.Kafka.Settings;

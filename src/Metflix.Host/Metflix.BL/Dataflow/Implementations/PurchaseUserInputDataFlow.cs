@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Threading.Tasks.Dataflow;
+﻿using System.Threading.Tasks.Dataflow;
 using AutoMapper;
 using Metflix.BL.Dataflow.Contracts;
 using Metflix.DL.Repositories.Contracts;
@@ -19,13 +14,14 @@ namespace Metflix.BL.Dataflow.Implementations
         private readonly TransformBlock<PurchaseUserInputData, PurchaseInfoData> _getPurchaseInfoBlock;
         private readonly IMapper _mapper;
         private readonly IGenericProducer<string, PurchaseInfoData, KafkaPurchaseDataProducerSettings> _producer;
+        private readonly ITempPurchaseDataRepository _tempPurchaseDataRepository;
 
-        public PurchaseUserInputDataFlow(IMovieRepository movieRepository, IMapper mapper, IGenericProducer<string, PurchaseInfoData, KafkaPurchaseDataProducerSettings> producer)
+        public PurchaseUserInputDataFlow(IMovieRepository movieRepository, IMapper mapper, IGenericProducer<string, PurchaseInfoData, KafkaPurchaseDataProducerSettings> producer,ITempPurchaseDataRepository tempPurchaseDataRepository)
         {
             _movieRepository = movieRepository;
             _mapper = mapper;
             _producer = producer;
-
+            _tempPurchaseDataRepository = tempPurchaseDataRepository;
             var options = new ExecutionDataflowBlockOptions()
             {
                 MaxDegreeOfParallelism = 4,
@@ -44,8 +40,17 @@ namespace Metflix.BL.Dataflow.Implementations
         }
 
         private async Task ProduceToTopic(PurchaseInfoData purchaseInfoData)
-        {            
-            await _producer.ProduceAsync(purchaseInfoData.GetKey(), purchaseInfoData);            
+        {
+            try
+            {
+                await _producer.ProduceAsync(purchaseInfoData.GetKey(), purchaseInfoData);
+            }
+            catch 
+            {
+                await _tempPurchaseDataRepository.DeleteEntryAsync(purchaseInfoData.UserId);
+                throw;
+            }
+                      
         }
 
         public async Task ProcessData(PurchaseUserInputData data, CancellationToken cancellationToken = default)
@@ -55,19 +60,28 @@ namespace Metflix.BL.Dataflow.Implementations
 
         private async Task<PurchaseInfoData> GetPurchaseData(PurchaseUserInputData userInput)
         {
-            var movieInfos = new List<MovieInfoData>();
-            foreach (var movieId in userInput.MovieIds)
+            try
             {
-                var movie = await _movieRepository.GetById(movieId);
-                movieInfos.Add(_mapper.Map<MovieInfoData>(movie));
+                var movieInfos = new List<MovieInfoData>();
+                foreach (var movieId in userInput.MovieIds)
+                {
+                    var movie = await _movieRepository.GetById(movieId);
+                    movieInfos.Add(_mapper.Map<MovieInfoData>(movie));
+                }
+
+                return new PurchaseInfoData()
+                {
+                    UserId = userInput.UserId,
+                    Days = userInput.Days,
+                    MovieInfoData = movieInfos
+                };
             }
 
-            return new PurchaseInfoData()
+            catch
             {
-                UserId = userInput.Id,
-                Days = userInput.Days,
-                MovieInfoData = movieInfos
-            };
+                await _tempPurchaseDataRepository.DeleteEntryAsync(userInput.UserId);
+                throw;
+            }
         }
 
         public void Dispose()

@@ -1,5 +1,4 @@
-﻿using System.Runtime.CompilerServices;
-using AutoMapper;
+﻿using AutoMapper;
 using Metflix.Models.DbModels;
 using Metflix.Models.KafkaModels;
 using Metflix.Models.Requests.Movies;

@@ -1,13 +1,10 @@
-﻿using System;
-using Metflix.DL.Repositories.Contracts;
-using Metflix.DL.Repositories.Implementations.SqlRepositories;
+﻿using Metflix.DL.Repositories.Contracts;
 using Metflix.Models.Configurations;
 using Metflix.Models.DbModels;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 using MongoDB.Driver.Linq;
-using static Dapper.SqlMapper;
 
 namespace Metflix.DL.Repositories.Implementations.MongoRepositories
 {

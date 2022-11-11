@@ -1,14 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using AutoMapper;
-using MediatR;
+﻿using MediatR;
 using Metflix.DL.Repositories.Contracts;
 using Metflix.Models.Common;
 using Metflix.Models.Mediatr.Commands.Movies;
 using Metflix.Models.Responses.Movies;
-using Utils;
 
 namespace Metflix.BL.MediatR.CommandHandlers.Movies
 {

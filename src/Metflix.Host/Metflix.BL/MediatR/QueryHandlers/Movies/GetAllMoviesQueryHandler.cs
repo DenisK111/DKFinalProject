@@ -1,16 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Net;
 using AutoMapper;
 using MediatR;
 using Metflix.DL.Repositories.Contracts;
 using Metflix.Models.Mediatr.Queries.Movies;
 using Metflix.Models.Responses.Movies;
 using Metflix.Models.Responses.Movies.MovieDtos;
-using Microsoft.Extensions.Logging;
 
 namespace Metflix.BL.MediatR.QueryHandlers.Movies
 {

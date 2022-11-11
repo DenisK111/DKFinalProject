@@ -1,5 +1,4 @@
-﻿using System.Runtime.CompilerServices;
-using FluentValidation;
+﻿using FluentValidation;
 using Metflix.Models.Requests.Movies;
 
 namespace Metflix.Host.Validators.MovieValidators

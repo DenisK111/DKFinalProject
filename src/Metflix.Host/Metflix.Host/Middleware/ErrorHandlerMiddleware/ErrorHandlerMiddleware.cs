@@ -1,5 +1,4 @@
 ﻿using Metflix.Models.Common;
-using Newtonsoft.Json;
 using System.Data.SqlClient;
 using System.Net;
 using Utils;
@@ -51,14 +50,14 @@ namespace Metflix.Host.Middleware.ErrorHandlerMiddleware
 
                 if (error.Data[ExceptionDataKeys.IsCritical] != null)
                 {
-                    _logger.LogCritical($"{error.Source}\r\n{error.Message}\r\n{error.StackTrace}");
+                    _logger.LogCritical($"{error.Source}{Environment.NewLine}{error.Message}{Environment.NewLine}{error.StackTrace}");
                 }
                 else
                 {
-                    _logger.LogError($"{error.Source}\r\n{error.Message}\r\n{error.StackTrace}");
+                    _logger.LogError($"{error.Source}{Environment.NewLine}{error.Message}{Environment.NewLine}{error.StackTrace}");
                 }
                 
-                await response.WriteAsJsonAsync($"{error.Source}\r\n{error.Message}\r\n{error.StackTrace}");
+                await response.WriteAsJsonAsync($"{error.Source}{Environment.NewLine}{error.Message}{Environment.NewLine}{error.StackTrace}");
             }
         }
     }

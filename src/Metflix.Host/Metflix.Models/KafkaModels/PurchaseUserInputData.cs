@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MessagePack;
+﻿using MessagePack;
 using Metflix.Kafka.Contracts;
 
 namespace Metflix.Models.KafkaModels
@@ -12,7 +7,7 @@ namespace Metflix.Models.KafkaModels
     public class PurchaseUserInputData : IKafkaItem<string>
     {
         [Key(0)]
-        public string Id { get; set; } = null!;
+        public string UserId { get; set; } = null!;
         [Key(1)]
         public int[] MovieIds { get; set; } = null!;
         [Key(2)]
@@ -20,7 +15,7 @@ namespace Metflix.Models.KafkaModels
 
         public string GetKey()
         {
-            return Id;
+            return UserId;
         }
     }
 }

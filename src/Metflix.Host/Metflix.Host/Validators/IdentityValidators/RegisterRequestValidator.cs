@@ -1,5 +1,4 @@
-﻿using System.Globalization;
-using FluentValidation;
+﻿using FluentValidation;
 using Metflix.Models.Requests.Identity;
 
 namespace Metflix.Host.Validators.IdentityValidators

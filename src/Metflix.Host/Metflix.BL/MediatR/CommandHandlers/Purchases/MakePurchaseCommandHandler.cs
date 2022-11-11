@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Net;
 using AutoMapper;
 using MediatR;
 using MessagePack;
@@ -16,7 +11,6 @@ using Metflix.Models.KafkaModels;
 using Metflix.Models.Mediatr.Commands.Purchases;
 using Metflix.Models.Responses.Purchases;
 using Metflix.Models.Responses.Purchases.PurchaseDtos;
-using Utils;
 
 namespace Metflix.BL.MediatR.CommandHandlers.Purchases
 {
@@ -78,7 +72,7 @@ namespace Metflix.BL.MediatR.CommandHandlers.Purchases
 
             var kafkaMessageValue = new PurchaseUserInputData()
             {
-                Id = request.UserId,
+                UserId = request.UserId,
                 MovieIds = request.Request.MovieIds,
                 Days = request.Request.Days,
             };
@@ -95,42 +89,46 @@ namespace Metflix.BL.MediatR.CommandHandlers.Purchases
             }
 
             await _tempPurchaseRepository.SetOrUpdateEntryAsync(request.UserId, Array.Empty<byte>());
-
-            await _producer.ProduceAsync(kafkaMessageValue.GetKey(), kafkaMessageValue,cancellationToken);
-
-            var returnedValue = await _tempPurchaseRepository.GetValueAsync(key);
-
-            var retryCount = 15;
-            while (!returnedValue.Any() && retryCount != 0)
+            try
             {
-                await Task.Delay(200);
-                returnedValue = await _tempPurchaseRepository.GetValueAsync(key);
-                retryCount--;
-            }
+                await _producer.ProduceAsync(kafkaMessageValue.GetKey(), kafkaMessageValue, cancellationToken);
 
-            PurchaseResponse purchaseResponse = null!;
-            if (returnedValue.Any())
-            {
-                var returnedPurchase = MessagePackSerializer.Deserialize<Purchase>(returnedValue);
-                purchaseResponse = new PurchaseResponse()
+                var returnedValue = await _tempPurchaseRepository.GetValueAsync(key);
+
+                var retryCount = 15;
+                while (!returnedValue.Any() && retryCount != 0)
                 {
-                    Model = _mapper.Map<PurchaseDto>(returnedPurchase),
-                    HttpStatusCode = HttpStatusCode.Created,
-                };
-            }
+                    await Task.Delay(200);
+                    returnedValue = await _tempPurchaseRepository.GetValueAsync(key);
+                    retryCount--;
+                }
 
-            else
-            {
-                purchaseResponse = new PurchaseResponse()
+                PurchaseResponse purchaseResponse = null!;
+                if (returnedValue.Any())
                 {
-                    HttpStatusCode = HttpStatusCode.InternalServerError,
-                    Message = ResponseMessages.InternalServerErrorMessage,
-                };
+                    var returnedPurchase = MessagePackSerializer.Deserialize<Purchase>(returnedValue);
+                    purchaseResponse = new PurchaseResponse()
+                    {
+                        Model = _mapper.Map<PurchaseDto>(returnedPurchase),
+                        HttpStatusCode = HttpStatusCode.Created,
+                    };
+                }
+
+                else
+                {
+                    purchaseResponse = new PurchaseResponse()
+                    {
+                        HttpStatusCode = HttpStatusCode.InternalServerError,
+                        Message = ResponseMessages.InternalServerErrorMessage,
+                    };
+                }
+                return purchaseResponse;
             }
 
-            await _tempPurchaseRepository.DeleteEntryAsync(key);
-
-            return purchaseResponse;
+            finally
+            {
+                await _tempPurchaseRepository.DeleteEntryAsync(key);
+            }            
         }
     }
 }

@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Net;
 using AutoMapper;
 using MediatR;
 using Metflix.DL.Repositories.Contracts;
@@ -11,7 +6,6 @@ using Metflix.Models.Common;
 using Metflix.Models.Mediatr.Queries.Purchases;
 using Metflix.Models.Responses.Purchases;
 using Metflix.Models.Responses.Purchases.PurchaseDtos;
-using Utils;
 
 namespace Metflix.BL.MediatR.QueryHandlers.Purchases
 {

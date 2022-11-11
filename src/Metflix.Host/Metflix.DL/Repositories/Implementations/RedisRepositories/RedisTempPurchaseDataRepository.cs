@@ -1,12 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
-using DnsClient.Internal;
-using Metflix.DL.Repositories.Contracts;
-using Metflix.DL.Repositories.Implementations.MongoRepositories;
+﻿using Metflix.DL.Repositories.Contracts;
 using Metflix.Models.Configurations;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;

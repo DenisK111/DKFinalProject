@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Metflix.DL.Repositories.Contracts;
+﻿using Metflix.DL.Repositories.Contracts;
 using Metflix.Models.Configurations;
 using Metflix.Models.DbModels;
-using Metflix.Models.KafkaModels;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;

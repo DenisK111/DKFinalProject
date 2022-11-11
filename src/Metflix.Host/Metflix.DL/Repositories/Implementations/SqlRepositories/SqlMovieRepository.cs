@@ -1,22 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data.Common;
-using System.Data.SqlClient;
-using System.Linq;
-using System.Reflection;
-using System.Reflection.Metadata.Ecma335;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using System.Data.SqlClient;
 using Dapper;
 using Metflix.DL.Repositories.Contracts;
 using Metflix.Models.DbModels;
 using Metflix.Models.DbModels.Configurations;
-using Metflix.Models.Responses.Movies.MovieDtos;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using static MongoDB.Driver.WriteConcern;
 
 namespace Metflix.DL.Repositories.Implementations.SqlRepositories
 {
@@ -120,8 +108,6 @@ namespace Metflix.DL.Repositories.Implementations.SqlRepositories
                 throw;
             }
         }
-
-
         public async Task<Movie?> GetById(int id, CancellationToken cancellationToken = default)
         {
 

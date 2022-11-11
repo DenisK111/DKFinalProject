@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Net;
 using AutoMapper;
 using Metflix.BL.Services.Contracts;
 using Metflix.DL.Repositories.Contracts;
@@ -13,7 +8,6 @@ using Metflix.Models.Configurations.KafkaSettings.Producers;
 using Metflix.Models.KafkaModels;
 using Metflix.Models.Responses.Movies;
 using Metflix.Models.Responses.Movies.MovieDtos;
-using Utils;
 
 namespace Metflix.BL.Services.Implementations
 {

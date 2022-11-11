@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
+﻿using System.Globalization;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 using MediatR;
 using Metflix.DL.Repositories.Contracts;
 using Metflix.Models.Mediatr.Queries.Reports;

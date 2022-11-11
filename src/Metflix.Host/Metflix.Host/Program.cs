@@ -15,7 +15,6 @@ using Metflix.Models.Configurations.KafkaSettings.Producers;
 using Metflix.Models.DbModels.Configurations;
 using Metflix.Models.DbModels.Helpers;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;

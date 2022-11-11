@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Metflix.Models.Responses.Movies
+﻿namespace Metflix.Models.Responses.Movies
 {
     public class AddInventoryRequest
     {

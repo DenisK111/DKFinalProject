@@ -1,24 +1,12 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Data.SqlClient;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using System.Transactions;
+﻿using System.Data.SqlClient;
 using Dapper;
 using Metflix.DL.Repositories.Contracts;
 using Metflix.Models.DbModels;
 using Metflix.Models.DbModels.Configurations;
 using Metflix.Models.DbModels.DbDtos;
-using Metflix.Models.Responses.Purchases.PurchaseDtos;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Microsoft.VisualBasic;
 using Utils;
-using static MongoDB.Driver.WriteConcern;
 
 namespace Metflix.DL.Repositories.Implementations.SqlRepositories
 {

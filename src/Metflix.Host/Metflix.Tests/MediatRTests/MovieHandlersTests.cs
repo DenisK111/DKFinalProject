@@ -1,5 +1,4 @@
 using AutoMapper;
-using MediatR;
 using Metflix.BL.MediatR.CommandHandlers.Movies;
 using Metflix.BL.MediatR.QueryHandlers.Movies;
 using Metflix.BL.Services.Contracts;
@@ -10,11 +9,9 @@ using Metflix.Models.DbModels;
 using Metflix.Models.Mediatr.Commands.Movies;
 using Metflix.Models.Mediatr.Queries.Movies;
 using Metflix.Models.Requests.Movies;
-using Metflix.Models.Responses;
 using Metflix.Models.Responses.Movies;
 using Metflix.Models.Responses.Movies.MovieDtos;
 using Moq;
-using Utils;
 
 namespace Metflix.Tests.MediatRTests
 {

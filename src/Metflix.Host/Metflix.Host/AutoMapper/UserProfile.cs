@@ -1,5 +1,4 @@
-﻿using System.Globalization;
-using AutoMapper;
+﻿using AutoMapper;
 using Metflix.Models.DbModels;
 using Metflix.Models.DbModels.Helpers;
 using Metflix.Models.Requests.Identity;
