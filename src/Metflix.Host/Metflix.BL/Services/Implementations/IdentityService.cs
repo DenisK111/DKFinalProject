@@ -12,10 +12,10 @@ namespace Metflix.BL.Services.Implementations
 {
     public class IdentityService : IIDentityService
     {
-        private readonly IIdentityRepository _userRepo;
+        private readonly IUserRepository _userRepo;
         private readonly IMapper _mapper;
 
-        public IdentityService(IIdentityRepository userRepo, IMapper mapper)
+        public IdentityService(IUserRepository userRepo, IMapper mapper)
         {
 
             _userRepo = userRepo;

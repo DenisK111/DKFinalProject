@@ -8,9 +8,9 @@ namespace Metflix.DL.Seeding.Implementations
 {
     public class UserSeeder : ISeeder
     {
-        private readonly IIdentityRepository _identityRepository;
+        private readonly IUserRepository _identityRepository;
 
-        public UserSeeder(IIdentityRepository identityRepository)
+        public UserSeeder(IUserRepository identityRepository)
         {
             _identityRepository = identityRepository;
         }

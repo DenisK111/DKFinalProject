@@ -20,7 +20,7 @@ namespace Metflix.Host.Extensions
         {
             services
                 .AddSingleton<IMovieRepository, SqlMovieRepository>()
-                .AddSingleton<IIdentityRepository, SqlIdentityRepository>()
+                .AddSingleton<IUserRepository, SqlUserRepository>()
                 .AddSingleton<IUserMovieRepository, SqlUserMovieRepository>()
                 .AddSingleton<IPurchaseRepository, MongoPurchaseRepository>()
                 .AddSingleton<IInventoryLogRepository, MongoInventoryLogRepository>()

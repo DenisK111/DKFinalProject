@@ -8,13 +8,13 @@ using Microsoft.Extensions.Options;
 
 namespace Metflix.DL.Repositories.Implementations.SqlRepositories
 {
-    public class SqlIdentityRepository : IIdentityRepository
+    public class SqlUserRepository : IUserRepository
     {
 
         private readonly ILogger<SqlMovieRepository> _logger;
         private readonly IOptionsMonitor<ConnectionStrings> _configuration;
 
-        public SqlIdentityRepository(ILogger<SqlMovieRepository> logger, IOptionsMonitor<ConnectionStrings> configuration)
+        public SqlUserRepository(ILogger<SqlMovieRepository> logger, IOptionsMonitor<ConnectionStrings> configuration)
         {
             _logger = logger;
             _configuration = configuration;
@@ -37,7 +37,7 @@ namespace Metflix.DL.Repositories.Implementations.SqlRepositories
             catch (Exception e)
             {
                 e.Data.Add("IsCritical", true);
-                e.Source = $"Error in {nameof(SqlIdentityRepository)}.{nameof(CheckIfUserExists)}";
+                e.Source = $"Error in {nameof(SqlUserRepository)}.{nameof(CheckIfUserExists)}";
                 throw;
             }
 
@@ -61,7 +61,7 @@ namespace Metflix.DL.Repositories.Implementations.SqlRepositories
             catch (Exception e)
             {
                 e.Data.Add("IsCritical", true);
-                e.Source = $"Error in {nameof(SqlIdentityRepository)}.{nameof(CreateUser)}";
+                e.Source = $"Error in {nameof(SqlUserRepository)}.{nameof(CreateUser)}";
                 throw;
             }
 
@@ -85,7 +85,7 @@ namespace Metflix.DL.Repositories.Implementations.SqlRepositories
             catch (Exception e)
             {
                 e.Data.Add("IsCritical", true);
-                e.Source = $"Error in {nameof(SqlIdentityRepository)}.{nameof(GetById)}";                
+                e.Source = $"Error in {nameof(SqlUserRepository)}.{nameof(GetById)}";                
                 throw;
             }            
         }
@@ -106,7 +106,7 @@ namespace Metflix.DL.Repositories.Implementations.SqlRepositories
             catch (Exception e)
             {
                 e.Data.Add("IsCritical", true);
-                e.Source = $"Error in {nameof(SqlIdentityRepository)}.{nameof(GetUserByEmail)}";
+                e.Source = $"Error in {nameof(SqlUserRepository)}.{nameof(GetUserByEmail)}";
                 throw;
             }           
         }

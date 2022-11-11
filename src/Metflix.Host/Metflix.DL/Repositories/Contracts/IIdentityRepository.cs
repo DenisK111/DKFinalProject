@@ -2,7 +2,7 @@
 
 namespace Metflix.DL.Repositories.Contracts
 {
-    public interface IIdentityRepository
+    public interface IUserRepository
     {
         Task<UserInfo> GetUserByEmail(string email, CancellationToken cancellationToken = default);
         Task<UserInfo> GetById(string id, CancellationToken cancellationToken = default);

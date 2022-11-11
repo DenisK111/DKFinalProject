@@ -9,10 +9,10 @@ namespace Metflix.DL.Seeding
     public class DbSeeder : IDbSeeder
     {
         private readonly IMovieRepository _movieRepository;
-        private readonly IIdentityRepository _identityRepository;
+        private readonly IUserRepository _identityRepository;
         private readonly IPurchaseRepository _purchaseRepository;
 
-        public DbSeeder(IMovieRepository movieRepository, IIdentityRepository identityRepository, IPurchaseRepository purchaseRepository)
+        public DbSeeder(IMovieRepository movieRepository, IUserRepository identityRepository, IPurchaseRepository purchaseRepository)
         {
             _movieRepository = movieRepository;
             _identityRepository = identityRepository;

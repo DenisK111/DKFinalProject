@@ -7,9 +7,9 @@ namespace Metflix.DL.Seeding.Implementations
     public class PurchaseSeeder : ISeeder
     {
         private readonly IPurchaseRepository _purchaseRepository;
-        private readonly IIdentityRepository _identityRepository;
+        private readonly IUserRepository _identityRepository;
 
-        public PurchaseSeeder(IPurchaseRepository purchaseRepository, IIdentityRepository identityRepository)
+        public PurchaseSeeder(IPurchaseRepository purchaseRepository, IUserRepository identityRepository)
         {
             _purchaseRepository = purchaseRepository;
             _identityRepository = identityRepository;

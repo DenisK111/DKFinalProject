@@ -15,10 +15,10 @@ namespace Metflix.BL.Services.Implementations
     {
         private readonly IMovieRepository _movieRepository;
         private readonly IMapper _mapper;
-        private readonly IIdentityRepository _userRepository;
+        private readonly IUserRepository _userRepository;
         private readonly IGenericProducer<Guid, InventoryChangeData, KafkaInventoryChangesProducerSettings> _kafkaProducer;
 
-        public InventoryService(IMovieRepository movieRepository, IMapper mapper, IIdentityRepository userRepository, IGenericProducer<Guid, InventoryChangeData, KafkaInventoryChangesProducerSettings> kafkaProducer)
+        public InventoryService(IMovieRepository movieRepository, IMapper mapper, IUserRepository userRepository, IGenericProducer<Guid, InventoryChangeData, KafkaInventoryChangesProducerSettings> kafkaProducer)
         {
             _movieRepository = movieRepository;
             _mapper = mapper;
